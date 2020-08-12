@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scope</title>
+
+    //<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script type="module">
+
+
+        //import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r119/build/three.module.js';
+        import * as THREE from './three.module.js';
+
+
+
+
+
+        function initC(idStr,colStr,l,w,t,h) {
+
+            $("#"+idStr).css({
+
+                "background-color":colStr,
+                "position":"absolute",
+                "left":l+"%",
+                "width":w+"%",
+                "top":t+"%",
+                "height":h+"%",
+                "visibility": "visible",
+            })
+
+
+
+        };
+
+
+
+        $(document).ready(function () {
+
+            /*
+
+            $("#blue").css({
+                "background-color": "LightGray",
+                "position":"absolute",
+                "left":"20%",
+                "width":"50%",
+                "top":"5%",
+                "height":"50%"
+
+
+
+
+            });
+           */
+
+
+
+
+
+
+            initC("mainPanel","Gray",5,90,5,90);
+            initC("c","Black",5,90,5,45);
+            initC("rangePanel","LightGray",2,68,62,16);
+            initC("buttonPanel","LightGray",72,26,62,16);
+
+
+
+            initC("R1","Orange",20,60,15,15);
+            $("#R1").attr("step","0.1");
+            initC("NR1","LightGreen",2,16,15,15);
+            initC("VR1","LightGreen",85,10,15,15);
+
+            //next lines 3js Ev 1 -----
+
+            $("#NR1").text("Rot Speed");
+            //$("#NR1").text("R1");
+            //$("#NR1").text("R1");
+            $("#VR1").text("Arb");
+            //$("#VR1").text($("#R1").val());
+            // $("#R1").on("input",function(){ $("#VR1").text($("#R1").val())});
+            // -----
+
+            initC("R2","Orange",10,70,30,15);
+            $("#R2").attr("step","0.1");
+            initC("NR2","LightGreen",2,6,30,15);
+            initC("VR2","LightGreen",85,10,30,15);
+            $("#NR2").text("R2");
+            $("#VR2").text($("#R2").val());
+            $("#R2").on("input",function(){ $("#VR2").text($("#R2").val())});
+
+            initC("R3","Orange",10,70,45,15);
+            $("#R3").attr("step","0.1");
+            initC("NR3","LightGreen",2,6,45,15);
+            initC("VR3","LightGreen",85,10,45,15);
+            $("#NR3").text("R3");
+            $("#VR3").text($("#R3").val());
+            $("#R3").on("input",function(){ $("#VR3").text($("#R3").val())});
+
+
+            initC("B1","LightBlue",4,20,5,15);
+            initC("B2","LightBlue",28,20,5,15);
+            initC("B3","LightBlue",52,20,5,15);
+            initC("B4","LightBlue",76,20,5,15);
+
+            $("#B1").text("B1");
+            $("#B1").click(function(){alert("button B1 pressed");});//insert action or call func
+
+            $("#B2").text("B2");
+            $("#B2").click(function(){alert("button B2 pressed");});//insert action or call func
+
+
+            $("#B3").text("B3");
+            $("#B3").click(function(){alert("button B3 pressed");});//insert action or call func
+
+            $("#B4").text("B4");
+            $("#B4").click(function(){alert("button B4 pressed");});//insert action or call func
+
+
+
+            //3js Ev1 ------
+            // example based on 3js web site intro tutorial
+            //https://threejsfundamentals.org/threejs/lessons/threejs-fundamentals.html
+
+            let canvas = document.querySelector('#c');
+            let renderer = new THREE.WebGLRenderer({canvas});
+            let fov = 75;
+            let aspect = 2;  // the canvas default
+            let near = 0.1;
+            let far = 5;
+            let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+            camera.position.z = 2;
+            camera.position.x = 0.3;
+
+            let scene = new THREE.Scene();
+
+            {
+                let color = 0xFFFFFF;
+                let intensity = 1;
+                let light = new THREE.DirectionalLight(color, intensity);
+                light.position.set(-1, 2, 4);
+                scene.add(light);
+            }
+
+            let boxWidth = 1;
+            let boxHeight = 1;
+            let boxDepth = 1;
+            let geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+
+            let material = new THREE.MeshPhongMaterial({color: 0x44aa88});  // greenish blue
+
+            let cube = new THREE.Mesh(geometry, material);
+            let rot =0;
+            let divider =0;
+            scene.add(cube);
+
+            renderer.render(scene, camera);
+            function  render(time) {
+                //removed example code using time
+                //as I want to use a slider
+                //time *= 0.001;  // convert time to seconds
+
+                // prevent divider becoming zero by adding 1
+                //as slider min = zero
+
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+
+
+
+
+                divider = 1 + parseInt($("#R1").val());
+
+                rot += (0.2 / divider);
+                cube.rotation.y =  rot ;
+                cube.rotation.x = rot/10;
+
+
+                renderer.render(scene, camera);
+
+                requestAnimationFrame(render);
+            }
+            requestAnimationFrame(render);
+
+            //-----
+
+
+        });
+
+    </script>
+
+</head>
+<body>
+
+<div id="mainPanel" style="visibility:hidden">
+
+    <canvas id="c" width="800" height="400"></canvas>
+
+    <div id="rangePanel" >
+        <input type="range" id="R1" name="range1" min="0" max="10">
+        <div id="NR1"></div>
+        <div id="VR1"></div>
+        <input type="range" id="R2" name="range2" min="0" max="10">
+        <div id="NR2"></div>
+        <div id="VR2"></div>
+        <input type="range" id="R3" name="range3" min="0" max="10">
+        <div id="NR3"></div>
+        <div id="VR3"></div>
+    </div>
+
+    <div id="buttonPanel">
+        <button id="B1" name="button1"></button>
+        <button id="B2" name="button2"></button>
+        <button id="B3" name="button3"></button>
+        <button id="B4" name="button4"></button>
+    </div>
+
+</div>
+</body>
+</html>
