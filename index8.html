@@ -154,6 +154,17 @@
             scene.add(cube);
 
             renderer.render(scene, camera);
+
+            function resizeRendererToDisplaySize(renderer) {
+                const canvas = renderer.domElement;
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                const needResize = canvas.width !== width || canvas.height !== height;
+                if (needResize) {
+                    renderer.setSize(2 * width,2 * height, false);
+                }
+                return needResize;
+            }
             function  render(time) {
                 //removed example code using time
                 //as I want to use a slider
@@ -162,8 +173,13 @@
                 // prevent divider becoming zero by adding 1
                 //as slider min = zero
 
-                camera.aspect = canvas.clientWidth / canvas.clientHeight;
-                camera.updateProjectionMatrix();
+                //camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                //camera.updateProjectionMatrix();
+                if (resizeRendererToDisplaySize(renderer)) {
+                    const canvas = renderer.domElement;
+                    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                    camera.updateProjectionMatrix();
+                }
 
 
 
