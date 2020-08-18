@@ -142,8 +142,27 @@
                 let intensity = 1;
                 let light = new THREE.DirectionalLight(color, intensity);
                 light.position.set(-1, 2, 4);
-                scene.add(light);
+                //scene.add(light);
             }
+
+            var spotLight = new THREE.SpotLight(0xFFFFFF);
+            spotLight.position.set(4, 4, 4);
+            spotLight.castShadow = true;
+            spotLight.shadow.mapSize = new THREE.Vector2(2048, 2048);
+            spotLight.shadow.camera.far = 500;
+            spotLight.shadow.camera.near = 0.5;
+
+            // If you want a more detailled shadow you can increase the
+            // mapSize used to draw the shadows.
+            // spotLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
+           scene.add(spotLight);
+
+            var helper = new THREE.CameraHelper( spotLight.shadow.camera );
+            scene.add( helper )
+
+            var ambienLight = new THREE.AmbientLight(0x353535);
+            //scene.add(ambienLight);
+
 
             //*****CUBE*****
 
@@ -152,9 +171,10 @@
             let boxDepth = 1;
             let geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
 
-            let material = new THREE.MeshPhongMaterial({color: 0x44aa88});  // greenish blue
+            let material = new THREE.MeshLambertMaterial({ color: 0x44aa88});  // greenish blue
 
             let cube = new THREE.Mesh(geometry, material);
+            cube.castShadow = true;
             let rot =0;
             let divider =0;
             scene.add(cube);
@@ -169,12 +189,17 @@
             //*****PLANE*****
             // create the ground plane
             var planeGeometry = new THREE.PlaneGeometry(6, 6);
-            var planeMaterial = new THREE.MeshBasicMaterial({
-                color: 0xAAAAAA,
-                wireframe: false,
-                transparent: true, opacity: 0.35
+            let planeMaterial = new THREE.MeshLambertMaterial({
+                color: 0xCCCCCC,
+                transparent: true, opacity: 0.5
             });
+           // var planeMaterial = new THREE.MeshBasicMaterial({
+           //     color: 0xAAAAAA,
+            //    wireframe: false,
+              //  transparent: true, opacity: 0.2
+           // });
             var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.receiveShadow = true;
 
             // rotate and position the plane
             plane.rotation.x = -0.25 * Math.PI;
@@ -187,7 +212,9 @@
             //*****RENDER SETUP*****
 
             renderer.setClearColor(new THREE.Color(0x000000));
+            renderer.shadowMap.enabled = true;
             renderer.render(scene, camera);
+
 
             function resizeRendererToDisplaySize(renderer) {
                 const canvas = renderer.domElement;
