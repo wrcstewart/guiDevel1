@@ -128,10 +128,12 @@
             let fov = 75;
             let aspect = 2;  // the canvas default
             let near = 0.1;
-            let far = 5;
+            let far = 20;
             let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-            camera.position.z = 2;
+            camera.position.z = 3;
+           // camera.position.z = .5;
             camera.position.x = 0.02;
+            // camera.position.x = 5;
 
             //*****SCENE AND LIGHTS*****
 
@@ -142,13 +144,13 @@
                 let intensity = 1;
                 let light = new THREE.DirectionalLight(color, intensity);
                 light.position.set(-1, 2, 4);
-                //scene.add(light);
+               // scene.add(light);
             }
 
             var spotLight = new THREE.SpotLight(0xFFFFFF);
             spotLight.position.set(4, 4, 4);
             spotLight.castShadow = true;
-            spotLight.shadow.mapSize = new THREE.Vector2(2048, 2048);
+            spotLight.shadow.mapSize = new THREE.Vector2(4096, 4096);
             spotLight.shadow.camera.far = 500;
             spotLight.shadow.camera.near = 0.5;
 
@@ -160,7 +162,7 @@
             var helper = new THREE.CameraHelper( spotLight.shadow.camera );
             scene.add( helper )
 
-            var ambienLight = new THREE.AmbientLight(0x353535);
+            var ambienLight = new THREE.AmbientLight(0xFFFFFF);
             //scene.add(ambienLight);
 
 
@@ -170,14 +172,14 @@
             let boxHeight = 1;
             let boxDepth = 1;
             let geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
-
             let material = new THREE.MeshLambertMaterial({ color: 0x44aa88});  // greenish blue
-
             let cube = new THREE.Mesh(geometry, material);
             cube.castShadow = true;
             let rot =0;
             let divider =0;
-            scene.add(cube);
+
+
+           scene.add(cube);
 
             //*****AXES*****
 
@@ -188,7 +190,7 @@
 
             //*****PLANE*****
             // create the ground plane
-            var planeGeometry = new THREE.PlaneGeometry(6, 6);
+            var planeGeometry = new THREE.PlaneGeometry(8, 8);
             let planeMaterial = new THREE.MeshLambertMaterial({
                 color: 0xCCCCCC,
                 transparent: true, opacity: 0.5
@@ -199,15 +201,38 @@
               //  transparent: true, opacity: 0.2
            // });
             var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-            plane.receiveShadow = true;
+           plane.receiveShadow = true;
+            plane.material.side = THREE.DoubleSide;
 
             // rotate and position the plane
-            plane.rotation.x = -0.25 * Math.PI;
+            plane.rotation.x = 0;// -0.4 * Math.PI;
+            plane.rotation.z = 0; //-0.3 * Math.PI;
             plane.position.set(0, 0, 0);
 
             // add the plane to the scene
             scene.add(plane);
 
+
+/* show BufferGeometry - need to adjust camera pos so x, y near to 1.
+            var geometryL = new THREE.BufferGeometry();
+// create a simple square shape. We duplicate the top left and bottom right
+// vertices because each vertex needs to appear once per triangle.
+            var vertices = new Float32Array( [
+                -1.0, -1.0,  1.0,
+                1.0, -1.0,  1.0,
+                1.0,  1.0,  1.0,
+
+                1.0,  1.0,  1.0,
+                -1.0,  1.0,  1.0,
+                -1.0, -1.0,  1.0
+            ] );
+
+// itemSize = 3 because there are 3 values (components) per vertex
+            geometryL.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+            var materialL = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            var meshL = new THREE.Mesh( geometryL, materialL );
+            scene.add(meshL);
+*/
 
             //*****RENDER SETUP*****
 
@@ -249,9 +274,12 @@
 
                 divider = 1 + parseInt($("#R1").val());
 
-                rot += (0.2 / divider);
-                cube.rotation.y =  rot ;
+                rot += (0.02 / divider);
+                cube.rotation.y =  rot/5 ;
                 cube.rotation.x = rot/10;
+                plane.rotation.y = rot/50;
+                plane.rotation.x =rot/100;
+                plane.rotation.z = rot/200;
 
 
                 renderer.render(scene, camera);
