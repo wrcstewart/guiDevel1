@@ -125,12 +125,12 @@
             let renderer = new THREE.WebGLRenderer({canvas});
 
             //*****CAMERA*****
-            let fov = 75;
+            let fov = 85;
             let aspect = 2;  // the canvas default
             let near = 0.1;
-            let far = 20;
+            let far = 40;
             let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-            camera.position.z = 3;
+            camera.position.z = 10;
            // camera.position.z = .5;
             camera.position.x = 0.02;
             // camera.position.x = 5;
@@ -180,6 +180,12 @@
 
 
            scene.add(cube);
+
+            let cube2 = new THREE.Mesh(geometry.clone(), material.clone());
+            cube2.position.x = -2;
+            cube2.material.color.set(0x0000FF);
+
+            scene.add(cube2);
 
             //*****AXES*****
 
@@ -277,10 +283,11 @@
                 rot += (0.02 / divider);
                 cube.rotation.y =  rot/5 ;
                 cube.rotation.x = rot/10;
-                plane.rotation.y = rot/50;
-                plane.rotation.x =rot/100;
-                plane.rotation.z = rot/200;
-
+                plane.rotation.y = rot/10;
+                plane.rotation.x =rot/10;
+                plane.rotation.z = rot/20;
+                cube.position.x += 0.0005;
+                cube.position.z -= 0.0005;
 
                 renderer.render(scene, camera);
 
