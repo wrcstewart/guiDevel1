@@ -11,6 +11,8 @@
 
         //import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r119/build/three.module.js';
         import * as THREE from './three.module.js';
+       // import {Fog} from "./three.module.js";
+       // import {FogExp2} from "./three.module.js";
 
 
 
@@ -138,6 +140,10 @@
             //*****SCENE AND LIGHTS*****
 
             let scene = new THREE.Scene();
+
+            let aFog = new THREE.FogExp2(0xFF0000,0.075);
+
+            scene.fog = aFog;
 
             {
                 let color = 0xFFFFFF;
