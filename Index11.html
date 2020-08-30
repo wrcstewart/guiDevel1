@@ -13,6 +13,7 @@
         import * as THREE from './three.module.js';
        // import {Fog} from "./three.module.js";
        // import {FogExp2} from "./three.module.js";
+        import { GLTFLoader } from './GLTFMod.js';
 
 
 
@@ -123,14 +124,21 @@
             // example based on 3js web site intro tutorial
             //https://threejsfundamentals.org/threejs/lessons/threejs-fundamentals.html
 
+            var loader = new GLTFLoader();
+
+
+
             let canvas = document.querySelector('#c');
             let renderer = new THREE.WebGLRenderer({canvas});
+
+            let zpos = 50;
+            let xpos = 0;
 
             //*****CAMERA*****
             let fov = 75;
             let aspect = 2;  // the canvas default
             let near = 0.05;
-            let far = 50;
+            let far = 500;
             let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
             camera.position.z = 10;
            // camera.position.z = .5;
@@ -150,6 +158,22 @@
             //*****SCENE AND LIGHTS*****
 
             let scene = new THREE.Scene();
+            let myObj = new THREE.Object3D();
+            var myDuck;
+
+            loader.load( './Duck.glb', function(gltf) {
+
+                //scene.add(gltf.scene);
+                myObj.add(gltf.scene);
+                //scene.add(myDuck);
+
+            }, undefined, function (error){
+                console.error(error);
+
+            });
+
+            scene.add(myObj);
+            myObj.position.y = -1;
 
             let aFog = new THREE.FogExp2(0xFF0000,0.075);
 
@@ -165,7 +189,7 @@
 
             var spotLight = new THREE.SpotLight(0xFFFFFF);
             spotLight.position.set(4, 4, 4);
-            spotLight.castShadow = false;
+            spotLight.castShadow = true;
             spotLight.shadow.mapSize = new THREE.Vector2(4096, 4096);
             spotLight.shadow.camera.far = 500;
             spotLight.shadow.camera.near = 0.5;
@@ -178,8 +202,8 @@
             var helper = new THREE.CameraHelper( spotLight.shadow.camera );
             scene.add( helper )
 
-            var ambienLight = new THREE.AmbientLight(0xFFFFFF);
-           // scene.add(ambienLight);
+            var ambienLight = new THREE.AmbientLight(0xFF0000);
+            scene.add(ambienLight);
 
 
             //***** PARAMETRIC EXPTS *****
@@ -189,13 +213,13 @@
             var w = 10; var d = 20;
 
             function fPlane(u,v, vec) {
-                 vec.x = (4+0.1*v) * Math.cos(6.28*u); // + 0.1*Math.cos(6.28*v);
-                 vec.y = (4+0.1 *v) *Math.sin(6.28*u); //  +0.1 *Math.sin(6.28*v) ;
-                 vec.z =  0.05 * Math.random()*v ;
+                 vec.x = (4+0.3*v) * Math.cos(6.28*u); // + 0.1*Math.cos(6.28*v);
+                 vec.y = (4+0.3 *v) *Math.sin(6.28*u); //  +0.1 *Math.sin(6.28*v) ;
+                 vec.z =  1.0; // * Math.random()*v ;
             }
 
             var geometryPar = new THREE.ParametricGeometry(fPlane,100,5);
-            var  materialPar = new THREE.MeshPhongMaterial( { color: 0xffffff } );
+            var  materialPar = new THREE.MeshPhongMaterial( { color: 0xffffff, wireframe:true } );
 
             var aParameterThing = new THREE.Mesh( geometryPar, materialPar );
             aParameterThing.material.side = THREE.DoubleSide;
@@ -214,11 +238,12 @@
             let divider =0;
 
 
-           scene.add(cube);
+          // scene.add(cube);
 
             let cube2 = new THREE.Mesh(geometry.clone(), material.clone());
             cube2.position.x = -2;
             cube2.material.color.set(0x0000FF);
+            cube2.castShadow = true;
 
             scene.add(cube2);
 
@@ -313,10 +338,15 @@
 
 
 
-                divider = 1 + parseInt($("#R1").val());
+                divider = 1 + parseFloat($("#R1").val());
+                zpos = 20 * parseFloat($("#R2").val());
+                camera.position.z = zpos;
+
+                xpos =  -10 + 2 * parseFloat($("#R3").val());
+                camera.position.x = xpos;
 
                 rot += (0.02 / divider);
-                //cube.rotation.y =  rot/5 ;
+                myObj.rotation.y =  rot/5 ;
                 //cube.rotation.x = rot/10;
                 aParameterThing.rotation.y = rot/10;
                 //aParameterThing.rotation.x =rot/10;
