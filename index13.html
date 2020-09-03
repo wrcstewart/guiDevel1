@@ -13,7 +13,9 @@
         import * as THREE from './three.module.js';
        // import {Fog} from "./three.module.js";
        // import {FogExp2} from "./three.module.js";
-        import { GLTFLoader } from "./GLTFLoader.js";
+        import { GLTFLoader } from './GLTFMod.js';
+        import { GLTFExporter } from './GLTFExporterMod.js';
+
 
 
 
@@ -106,7 +108,7 @@
             initC("B4","LightBlue",76,20,5,15);
 
             $("#B1").text("B1");
-            $("#B1").click(function(){alert("button B1 pressed");});//insert action or call func
+            $("#B1").click(function(){exportGLTF(scene)});//insert action or call func
 
             $("#B2").text("B2");
             $("#B2").click(function(){alert("button B2 pressed");});//insert action or call func
@@ -123,7 +125,66 @@
             //3js Ev1 ------
             // example based on 3js web site intro tutorial
             //https://threejsfundamentals.org/threejs/lessons/threejs-fundamentals.html
+            //---------
+            function exportGLTF( input ) {
 
+                var gltfExporter = new GLTFExporter();
+
+                var options = {
+
+
+                    binary: true
+
+                };
+
+                gltfExporter.parse( input, function ( result ) {
+
+                    if (result instanceof ArrayBuffer) {
+
+                        saveArrayBuffer(result, 'scene2.glb');
+
+                    } else {
+
+                        var output = JSON.stringify(result, null, 2);
+                        console.log(output);
+                        saveString(output, 'scene2.gltf');
+
+                    }
+
+                }, options );
+
+            }
+
+            function saveString( text, filename ) {
+
+                save( new Blob( [ text ], { type: 'text/plain' } ), filename );
+
+            }
+
+
+            function saveArrayBuffer( buffer, filename ) {
+
+                save(new Blob([buffer], {type: 'application/octet-stream'}), filename);
+            }
+
+
+                function save( blob, filename ) {
+
+                    link.href = URL.createObjectURL( blob );
+                    link.download = filename;
+                    link.click();
+
+                    // URL.revokeObjectURL( url ); breaks Firefox...
+
+                }
+                var link = document.createElement( 'a' );
+                link.style.display = 'none';
+                document.body.appendChild( link ); // Firefox workaround, see #6594
+
+
+
+
+            //--------------------
 
             var loader = new GLTFLoader();
 
@@ -132,16 +193,19 @@
             let canvas = document.querySelector('#c');
             let renderer = new THREE.WebGLRenderer({canvas});
 
+            let zpos = 50;
+            let xpos = 0;
+
             //*****CAMERA*****
-            let fov = 85;
+            let fov = 75;
             let aspect = 2;  // the canvas default
-            let near = 0.1;
-            let far = 40;
+            let near = 0.05;
+            let far = 500;
             let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
             camera.position.z = 10;
            // camera.position.z = .5;
-            camera.position.x = 0.02;
-            // camera.position.x = 5;
+            camera.position.x = 0;
+            // camera.position.x = 6;
 
 
 
@@ -156,10 +220,27 @@
             //*****SCENE AND LIGHTS*****
 
             let scene = new THREE.Scene();
+            let myObj = new THREE.Object3D();
+            var myDuck;
+
+           // loader.load( './Duck.glb', function(gltf) {
+                loader.load( './scene2.glb', function(gltf) {
+
+                //scene.add(gltf.scene);
+                myObj.add(gltf.scene);
+                //scene.add(myDuck);
+
+            }, undefined, function (error){
+                console.error(error);
+
+            });
+            //myObj.scale.set(0.003,0.003,0.003);
+            scene.add(myObj);
+            myObj.position.y = -1;
 
             let aFog = new THREE.FogExp2(0xFF0000,0.075);
 
-            scene.fog = aFog;
+            //scene.fog = aFog;
 
             {
                 let color = 0xFFFFFF;
@@ -179,35 +260,33 @@
             // If you want a more detailled shadow you can increase the
             // mapSize used to draw the shadows.
             // spotLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
-           scene.add(spotLight);
+          //*** scene.add(spotLight);
 
             var helper = new THREE.CameraHelper( spotLight.shadow.camera );
-            scene.add( helper )
+            //***scene.add( helper )
 
-            var ambienLight = new THREE.AmbientLight(0x00FF00);
-            scene.add(ambienLight);
+            var ambienLight = new THREE.AmbientLight(0xFF0000);
+            //***scene.add(ambienLight);
 
 
             //***** PARAMETRIC EXPTS *****
 
-            var w = 10; var d = 20;
-            function fPlane(u,v) {
-                var x = u * 20;
-                var y = v * 50;
-                var z = v * 20;
 
-                return( new THREE.Vector3(x, y, z));
+
+            var w = 10; var d = 20;
+
+            function fPlane(u,v, vec) {
+                 vec.x = (4+0.3*v) * Math.cos(6.28*u); // + 0.1*Math.cos(6.28*v);
+                 vec.y = (4+0.3 *v) *Math.sin(6.28*u); //  +0.1 *Math.sin(6.28*v) ;
+                 vec.z =  1.0; // * Math.random()*v ;
             }
 
-            var geometryPar = new THREE.ParametricGeometry( fPlane, 25, 25 );
-            var  materialPar = new THREE.MeshLambertMaterial({
-                color: 0x0000CC,
-                transparent: true, opacity: 0.9
-            });
+            var geometryPar = new THREE.ParametricGeometry(fPlane,100,5);
+            var  materialPar = new THREE.MeshPhongMaterial( { color: 0xffffff, wireframe:true } );
 
-            var aPlane = new THREE.Mesh( geometryPar, materialPar );
-            aPlane.material.side = THREE.DoubleSide;
-            scene.add( aPlane );
+            var aParameterThing = new THREE.Mesh( geometryPar, materialPar );
+            aParameterThing.material.side = THREE.DoubleSide;
+            //***scene.add( aParameterThing );
 
             //*****CUBE*****
 
@@ -222,19 +301,20 @@
             let divider =0;
 
 
-           scene.add(cube);
+          // scene.add(cube);
 
             let cube2 = new THREE.Mesh(geometry.clone(), material.clone());
             cube2.position.x = -2;
             cube2.material.color.set(0x0000FF);
+            cube2.castShadow = true;
 
-            scene.add(cube2);
+            //***scene.add(cube2);
 
             //*****AXES*****
 
 
             var axes = new THREE.AxesHelper(3);
-            scene.add(axes);
+           //*** scene.add(axes);
 
 
             //*****PLANE*****
@@ -242,12 +322,12 @@
             var planeGeometry = new THREE.PlaneGeometry(8, 8);
             let planeMaterial = new THREE.MeshLambertMaterial({
                 color: 0xCCCCCC,
-                transparent: true, opacity: 0.5
+                transparent: true, opacity: 0.33
             });
            // var planeMaterial = new THREE.MeshBasicMaterial({
            //     color: 0xAAAAAA,
             //    wireframe: false,
-              //  transparent: true, opacity: 0.2
+              //  transparent: true, opacity: 0.3
            // });
             var plane = new THREE.Mesh(planeGeometry, planeMaterial);
            plane.receiveShadow = true;
@@ -259,7 +339,7 @@
             plane.position.set(0, 0, 0);
 
             // add the plane to the scene
-            scene.add(plane);
+           //*** scene.add(plane);
 
 
 /* show BufferGeometry - need to adjust camera pos so x, y near to 1.
@@ -321,16 +401,22 @@
 
 
 
-                divider = 1 + parseInt($("#R1").val());
+                divider = 1 + parseFloat($("#R1").val());
+                zpos = 20 * parseFloat($("#R2").val());
+                camera.position.z = zpos;
+
+                xpos =  -10 + 2 * parseFloat($("#R3").val());
+                camera.position.x = xpos;
 
                 rot += (0.02 / divider);
-                cube.rotation.y =  rot/5 ;
-                cube.rotation.x = rot/10;
-                aPlane.rotation.y = rot/10;
-                aPlane.rotation.x =rot/10;
-                aPlane.rotation.z = rot/20;
+                myObj.rotation.y =  rot/5 ;
+                //cube.rotation.x = rot/10;
+                aParameterThing.rotation.y = rot/10;
+                //aParameterThing.rotation.x =rot/10;
+                //aParameterThing.rotation.z = rot/20;
                 cube.position.x += 0.0005;
                 cube.position.z -= 0.0005;
+                plane.rotation.x = rot/2;
 
                 renderer.render(scene, camera);
 
