@@ -223,8 +223,8 @@
             let myObj = new THREE.Object3D();
             var myDuck;
 
-           // loader.load( './Duck.glb', function(gltf) {
-                loader.load( './scene2.glb', function(gltf) {
+            loader.load( './Duck.glb', function(gltf) {
+               // loader.load( './scene2.glb', function(gltf) {
 
                 //scene.add(gltf.scene);
                 myObj.add(gltf.scene);
@@ -263,10 +263,10 @@
           //*** scene.add(spotLight);
 
             var helper = new THREE.CameraHelper( spotLight.shadow.camera );
-            //***scene.add( helper )
+            scene.add( helper )
 
-            var ambienLight = new THREE.AmbientLight(0xFF0000);
-            //***scene.add(ambienLight);
+            var ambienLight = new THREE.AmbientLight(0xFFFFFF);
+            scene.add(ambienLight);
 
 
             //***** PARAMETRIC EXPTS *****
@@ -286,7 +286,7 @@
 
             var aParameterThing = new THREE.Mesh( geometryPar, materialPar );
             aParameterThing.material.side = THREE.DoubleSide;
-            //***scene.add( aParameterThing );
+           scene.add( aParameterThing );
 
             //*****CUBE*****
 
@@ -301,7 +301,7 @@
             let divider =0;
 
 
-          // scene.add(cube);
+          scene.add(cube);
 
             let cube2 = new THREE.Mesh(geometry.clone(), material.clone());
             cube2.position.x = -2;
@@ -314,7 +314,7 @@
 
 
             var axes = new THREE.AxesHelper(3);
-           //*** scene.add(axes);
+           scene.add(axes);
 
 
             //*****PLANE*****
@@ -338,8 +338,8 @@
             plane.rotation.z = 0; //-0.3 * Math.PI;
             plane.position.set(0, 0, 0);
 
-            // add the plane to the scene
-           //*** scene.add(plane);
+
+            scene.add(plane);
 
 
 /* show BufferGeometry - need to adjust camera pos so x, y near to 1.
