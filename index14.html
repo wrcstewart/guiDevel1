@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scope</title>
+
+    //<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script type="module">
+
+
+        //import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r119/build/three.module.js';
+        import * as THREE from './three.module.js';
+       // import {Fog} from "./three.module.js";
+       // import {FogExp2} from "./three.module.js";
+        import { GLTFLoader } from './GLTFMod.js';
+        import { GLTFExporter } from './GLTFExporterMod.js';
+
+
+
+
+var rotating = true;
+
+        function initC(idStr,colStr,l,w,t,h) {
+
+            $("#"+idStr).css({
+
+                "background-color":colStr,
+                "position":"absolute",
+                "left":l+"%",
+                "width":w+"%",
+                "top":t+"%",
+                "height":h+"%",
+                "visibility": "visible",
+            })
+
+
+
+        };
+
+
+
+        $(document).ready(function () {
+
+            /*
+
+            $("#blue").css({
+                "background-color": "LightGray",
+                "position":"absolute",
+                "left":"20%",
+                "width":"50%",
+                "top":"5%",
+                "height":"50%"
+
+
+
+
+            });
+           */
+
+
+            initC("mainPanel", "Gray", 5, 90, 5, 90);
+            initC("c", "Black", 5, 90, 5, 45);
+            initC("rangePanel", "LightGray", 2, 68, 62, 16);
+            initC("buttonPanel", "LightGray", 72, 26, 62, 16);
+
+
+            initC("R1", "Orange", 20, 60, 15, 15);
+            $("#R1").attr("step", "0.1");
+            initC("NR1", "LightGreen", 2, 16, 15, 15);
+            initC("VR1", "LightGreen", 85, 10, 15, 15);
+
+            //next lines 3js Ev 1 -----
+
+            $("#NR1").text("Rot Speed");
+            //$("#NR1").text("R1");
+            //$("#NR1").text("R1");
+            $("#VR1").text("Arb");
+            //$("#VR1").text($("#R1").val());
+            // $("#R1").on("input",function(){ $("#VR1").text($("#R1").val())});
+            // -----
+
+            initC("R2", "Orange", 10, 70, 30, 15);
+            $("#R2").attr("step", "0.1");
+            initC("NR2", "LightGreen", 2, 6, 30, 15);
+            initC("VR2", "LightGreen", 85, 10, 30, 15);
+            $("#NR2").text("R2");
+            $("#VR2").text($("#R2").val());
+            $("#R2").on("input", function () {
+                $("#VR2").text($("#R2").val())
+            });
+
+            initC("R3", "Orange", 10, 70, 45, 15);
+            $("#R3").attr("step", "0.1");
+            initC("NR3", "LightGreen", 2, 6, 45, 15);
+            initC("VR3", "LightGreen", 85, 10, 45, 15);
+            $("#NR3").text("R3");
+            $("#VR3").text($("#R3").val());
+            $("#R3").on("input", function () {
+                $("#VR3").text($("#R3").val())
+            });
+
+
+            initC("B1", "LightBlue", 4, 20, 5, 15);
+            initC("B2", "LightBlue", 28, 20, 5, 15);
+            initC("B3", "LightBlue", 52, 20, 5, 15);
+            initC("B4", "LightBlue", 76, 20, 5, 15);
+
+            $("#B1").text("B1");
+            $("#B1").click(function () {
+                exportGLTF(scene)
+            });//insert action or call func
+
+            $("#B2").text("B2");
+            $("#B2").click(function () {
+                alert("button B2 pressed");
+            });//insert action or call func
+
+
+            $("#B3").text("B3");
+            $("#B3").click(function () {
+                alert("button B3 pressed");
+            });//insert action or call func
+
+            $("#B4").text("B4");
+            $("#B4").click(function () {
+                alert("button B4 pressed");
+            });//insert action or call func
+
+
+            //SEC export
+            {
+                function exportGLTF(input) {
+
+                    var gltfExporter = new GLTFExporter();
+
+                    var options = {
+
+
+                        binary: false
+
+                    };
+
+                    gltfExporter.parse(input, function (result) {
+
+                        if (result instanceof ArrayBuffer) {
+
+                            saveArrayBuffer(result, 'scene2.glb');
+
+                        } else {
+
+                            var output = JSON.stringify(result, null, 2);
+                            console.log(output);
+                            saveString(output, 'scene5.gltf');
+
+                        }
+
+                    }, options);
+
+                }
+
+                function saveString(text, filename) {
+
+                    save(new Blob([text], {type: 'text/plain'}), filename);
+
+                }
+
+
+                function saveArrayBuffer(buffer, filename) {
+
+                    save(new Blob([buffer], {type: 'application/octet-stream'}), filename);
+                }
+
+
+                function save(blob, filename) {
+
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename;
+                    link.click();
+
+                    // URL.revokeObjectURL( url ); breaks Firefox...
+
+                }
+
+                var link = document.createElement('a');
+                link.style.display = 'none';
+                document.body.appendChild(link); // Firefox workaround, see #6594
+            }
+
+            // Camera and Scene setup
+            let canvas = document.querySelector('#c');
+            let renderer = new THREE.WebGLRenderer({canvas});
+
+            let zpos = 10;
+            let xpos = 0;
+
+            //*****CAMERA*****
+            let fov = 75;
+            let aspect = 2;  // the canvas default
+            let near = 0.05;
+            let far = 500;
+            let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+            camera.position.z = 5;
+            // camera.position.z = .5;
+            camera.position.x = 0;
+            // camera.position.x = 6;
+
+            let scene = new THREE.Scene();
+
+            //SEC LOAD
+            {
+
+                let myObj = new THREE.Object3D();
+                var myDuck;
+                var loader = new GLTFLoader();
+
+                loader.load('./Duck.glb', function (gltf) {
+                    // loader.load( './scene2.glb', function(gltf) {
+
+                    //scene.add(gltf.scene);
+                    // myObj.add(gltf.scene);
+                    //scene.add(myDuck);
+
+                }, undefined, function (error) {
+                    console.error(error);
+
+                });
+                //myObj.scale.set(0.003,0.003,0.003);
+                scene.add(myObj);
+                myObj.position.y = -1;
+
+            }
+
+            //SEC Fog
+            {
+                let aFog = new THREE.FogExp2(0xFF0000, 0.075);
+
+                //scene.fog = aFog;
+
+            }
+
+            //SEC 1 texture uv
+            {
+
+            var texture1 = THREE.ImageUtils.loadTexture('./ash_uvgrid01.jpg');
+            var mat1 = new THREE.MeshPhongMaterial();
+            mat1.map = texture1;
+        }
+
+            //SEC directional light
+            {
+                let color = 0xFFFFFF;
+                let intensity = 1;
+                let light = new THREE.DirectionalLight(color, intensity);
+                light.position.set(-1, 2, 4);
+               // scene.add(light);
+            }
+
+            //SEC spotlight with shadow
+            {
+                var spotLight = new THREE.SpotLight(0xFFFFFF);
+                spotLight.position.set(4, 4, 4);
+                spotLight.castShadow = true;
+                spotLight.shadow.mapSize = new THREE.Vector2(4096, 4096);
+                spotLight.shadow.camera.far = 500;
+                spotLight.shadow.camera.near = 0.5;
+
+                // If you want a more detailled shadow you can increase the
+                // mapSize used to draw the shadows.
+                // spotLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
+                //*** scene.add(spotLight);
+
+            }
+
+           //SEC camera helper
+            {
+                var helper = new THREE.CameraHelper(spotLight.shadow.camera);
+                scene.add(helper)
+            }
+
+           //SEC ambient light
+            {
+                var ambienLight = new THREE.AmbientLight(0xFFFFFF);
+                scene.add(ambienLight);
+            }
+
+            //SEC Parameter uv geometry
+            {
+                var w = 10;
+                var d = 20;
+
+                // the function name no longer well chosen
+                function fPlane(u, v, vec) {
+                    vec.x = (4 + 0.3 * v) * Math.cos(6.28 * u); // + 0.1*Math.cos(6.28*v);
+                    vec.y = (4 + 0.3 * v) * Math.sin(6.28 * u); //  +0.1 *Math.sin(6.28*v) ;
+                    vec.z = 1.0; // * Math.random()*v ;
+                }
+
+                var geometryPar = new THREE.ParametricGeometry(fPlane, 100, 5);
+                var materialPar = new THREE.MeshPhongMaterial({color: 0xffffff, wireframe: true});
+
+                var aParameterThing = new THREE.Mesh(geometryPar, mat1);
+                aParameterThing.material.side = THREE.DoubleSide;
+                scene.add(aParameterThing);
+            }
+
+            //Sec CUBE
+            {
+                var boxWidth = 1;
+                var boxHeight = 1;
+                var boxDepth = 1;
+                var geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+                var material = new THREE.MeshLambertMaterial({color: 0x44aa88});  // greenish blue
+                var cube = new THREE.Mesh(geometry, material);
+                cube.castShadow = true;
+                var rot = 0;
+                var divider = 0;
+                scene.add(cube);
+            }
+
+            //SEC 2 texture uv
+            {
+                var geom2 = geometry.clone();
+                var meshT = new THREE.Mesh(geom2, mat1);
+                meshT.position.x = -1;
+                scene.add(meshT);
+            }
+
+            //SEC second cube
+            {
+                var cube2 = new THREE.Mesh(geometry.clone(), material.clone());
+                cube2.position.x = -2.5;
+                cube2.material.color.set(0x0000FF);
+                cube2.castShadow = true;
+                scene.add(cube2);
+            }
+
+            //SEC Axes
+            {
+                var axes = new THREE.AxesHelper(3);
+                scene.add(axes);
+            }
+
+
+            //SEC Plane
+            {
+                // create the ground plane
+                var planeGeometry = new THREE.PlaneGeometry(8, 8);
+                let planeMaterial = new THREE.MeshLambertMaterial({
+                    color: 0xCCCCCC,
+                    transparent: true, opacity: 0.33
+                });
+                // var planeMaterial = new THREE.MeshBasicMaterial({
+                //     color: 0xAAAAAA,
+                //    wireframe: false,
+                //  transparent: true, opacity: 0.3
+                // });
+                var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+                plane.receiveShadow = true;
+                plane.material.side = THREE.DoubleSide;
+
+                // rotate and position the plane
+                plane.rotation.x = 0;// -0.4 * Math.PI;
+                plane.rotation.z = 0; //-0.3 * Math.PI;
+                plane.position.set(0, 0, 0);
+
+
+                scene.add(plane);
+            }
+
+            // Buffer Geom
+            {
+                /* show BufferGeometry - need to adjust camera pos so x, y near to 1.
+            var geometryL = new THREE.BufferGeometry();
+// create a simple square shape. We duplicate the top left and bottom right
+// vertices because each vertex needs to appear once per triangle.
+            var vertices = new Float32Array( [
+                -1.0, -1.0,  1.0,
+                1.0, -1.0,  1.0,
+                1.0,  1.0,  1.0,
+
+                1.0,  1.0,  1.0,
+                -1.0,  1.0,  1.0,
+                -1.0, -1.0,  1.0
+            ] );
+
+// itemSize = 3 because there are 3 values (components) per vertex
+            geometryL.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+            var materialL = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            var meshL = new THREE.Mesh( geometryL, materialL );
+            scene.add(meshL);
+*/
+            }
+
+
+
+            //*****RENDER SETUP*****
+
+            renderer.setClearColor(new THREE.Color(0x000000));
+            renderer.shadowMap.enabled = true;
+            renderer.render(scene, camera);
+
+
+            function resizeRendererToDisplaySize(renderer) {
+                const canvas = renderer.domElement;
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                const needResize = canvas.width !== width || canvas.height !== height;
+                if (needResize) {
+                    renderer.setSize(2 * width,2 * height, false);
+                }
+                return needResize;
+            }
+
+
+            function  render(time) {
+
+
+                if (resizeRendererToDisplaySize(renderer)) {
+                    const canvas = renderer.domElement;
+                    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                    camera.updateProjectionMatrix();
+                }
+
+
+                //SEC Expt with uv texture
+                {
+                    var cut = (parseFloat($("#R3").val())) / 10.0;
+                    geom2.faceVertexUvs[0][3][1].x = cut;
+                    geom2.uvsNeedUpdate = true;
+                }
+
+                //SEC Zshift and rotate some items.
+                {
+
+                divider = 16 * (1 + parseFloat($("#R1").val()));
+                zpos = parseFloat($("#R2").val());
+                camera.position.z = zpos;
+
+                // xpos =  -10 + 2 * parseFloat($("#R3").val());
+                //camera.position.x = xpos;
+                if (document.getElementById('rotating').checked) {
+                    rot += (0.64 / divider);
+                    meshT.rotation.y = rot / 5;
+                    cube.rotation.x = rot / 10;
+                    aParameterThing.rotation.y = rot / 10;
+                    //aParameterThing.rotation.x =rot/10;
+                    //aParameterThing.rotation.z = rot/20;
+                    cube.position.x = 2;
+                    cube.position.z = 0;
+                    plane.rotation.x = rot / 2;
+
+                }
+            }
+
+
+                renderer.render(scene, camera);
+
+                requestAnimationFrame(render);
+            }
+
+            //*****START RENDERER FUNCTION*****
+
+            requestAnimationFrame(render);
+
+            //-----
+
+
+        });//******END READY FUNCTION*****
+
+    </script>
+    <script src="01-02.js"></script>
+
+</head>
+<body>
+
+<div id="mainPanel" style="visibility:hidden">
+
+    <canvas id="c" width="800" height="400"></canvas>
+
+    <div id="rangePanel" >
+        <input type="range" id="R1" name="range1" min="0" max="10">
+        <div id="NR1"></div>
+        <div id="VR1"></div>
+        <input type="range" id="R2" name="range2" min="0" max="10">
+        <div id="NR2"></div>
+        <div id="VR2"></div>
+        <input type="range" id="R3" name="range3" min="0" max="10">
+        <div id="NR3"></div>
+        <div id="VR3"></div>
+    </div>
+
+    <div id="buttonPanel">
+        <input type="checkbox" id="rotating" name="rotating" checked=true>
+        <button id="B1" name="button1"></button>
+        <button id="B2" name="button2"></button>
+        <button id="B3" name="button3"></button>
+        <button id="B4" name="button4"></button>
+    </div>
+
+</div>
+</body>
+</html>
