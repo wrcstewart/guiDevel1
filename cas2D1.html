@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+<script>
+function initC(idStr,colStr,l,w,t,h) {
+
+$("#"+idStr).css({
+
+"background-color":colStr,
+"position":"absolute",
+"left":l+"%",
+"width":w+"%",
+"top":t+"%",
+"height":h+"%",
+"visibility": "visible",
+})
+
+
+
+}
+
+
+
+let ready = $(document).ready(function () {
+
+
+
+
+    var rotating = true;
+
+//Set up GUI
+    {
+        initC("mainPanel", "Gray", 5, 90, 5, 300);
+
+        initC("c", "Black", 5, 160, 5, 45);
+        initC("rangePanel", "LightGray", 2, 68, 62, 16);
+        initC("buttonPanel", "LightGray", 72, 26, 62, 16);
+        initC("rotating", "LightGreen", 0, 10, 50, 20);
+        initC("NCB1", "LightGreen", 10, 15, 50, 20);
+        $("#NCB1").text("Rotate");
+
+
+        initC("R1", "Orange", 20, 60, 15, 15);
+        $("#R1").attr("step", "0.1");
+        initC("NR1", "LightGreen", 2, 16, 15, 15);
+        initC("VR1", "LightGreen", 85, 10, 15, 15);
+
+        initC("ta", "Blue", 30,10, 30 ,5);
+
+//next lines 3js Ev 1 -----
+
+        $("#NR1").text("Rot Speed");
+//$("#NR1").text("R1");
+//$("#NR1").text("R1");
+        $("#VR1").text("Arb");
+//$("#VR1").text($("#R1").val());
+// $("#R1").on("input",function(){ $("#VR1").text($("#R1").val())});
+// -----
+
+        initC("R2", "Orange", 10, 70, 30, 15);
+        $("#R2").attr("step", "0.1");
+        initC("NR2", "LightGreen", 2, 6, 30, 15);
+        initC("VR2", "LightGreen", 85, 10, 30, 15);
+        $("#NR2").text("R2");
+        $("#VR2").text($("#R2").val());
+        $("#R2").on("input", function () {
+            $("#VR2").text($("#R2").val())
+        });
+
+        initC("R3", "Orange", 10, 70, 45, 15);
+        $("#R3").attr("step", "0.1");
+        initC("NR3", "LightGreen", 2, 6, 45, 15);
+        initC("VR3", "LightGreen", 85, 10, 45, 15);
+        $("#NR3").text("R3");
+        $("#VR3").text($("#R3").val());
+        $("#R3").on("input", function () {
+            $("#VR3").text($("#R3").val())
+        });
+
+
+        initC("B1", "LightBlue", 4, 20, 5, 15);
+        initC("B2", "LightBlue", 28, 20, 5, 15);
+        initC("B3", "LightBlue", 52, 20, 5, 15);
+        initC("B4", "LightBlue", 76, 20, 5, 15);
+
+
+// below needs to be set
+        $("#B1").text("B1");
+        $("#B1").click(function () {
+            initC("mainPanel", "Gray", 5, 90, 5, 90);
+        });//insert action or call func
+
+        $("#B2").text("B2");
+        $("#B2").click(function () {
+            alert("button B2 pressed");
+        });//insert action or call func
+
+
+        $("#B3").text("B3");
+        $("#B3").click(function () {
+            alert("button B3 pressed");
+        });//insert action or call func
+
+        $("#B4").text("B4");
+        $("#B4").click(function () {
+            alert("button B4 pressed");
+        });//insert action or call func
+
+    }
+
+   /* var btn = document.createElement("textarea");   // Create a <button> element
+    //btn.innerHTML = "CLICK ME";// Insert text
+    btn.id ="btn";
+    document.body.appendChild(btn);
+   initC("btn", "Red", 1, 20, 2, 20);
+
+
+    var btn2 = document.createElement("textarea");
+    btn2.id ="btn2";
+    document.body.appendChild(btn2);
+    initC("btn2", "Blue", 4, 24, 4, 24);
+*/
+    var aDiv = document.createElement("div");
+    aDiv.id = "aDivID";
+
+    document.body.appendChild(aDiv);
+    initC("aDivID", "Red", 1, 20 , 2, 20);
+
+
+   var aTextArea = document.createElement("textarea");
+   aTextArea.id = "aTextAreaID";
+    aDiv.appendChild(aTextArea);
+  initC("aTextAreaID", "Blue", 4, 90, 4, 90);
+
+
+
+})
+
+</script>
+
+</head>
+
+
+<body>
+<div id="mainPanel" >
+
+
+
+    <canvas id="c" width="800" height="400"></canvas>
+    <textarea id="ta" , cols="50" , rows = "1"></textarea>
+    <div id="rangePanel" >
+        <input type="range" id="R1" name="range1" min="0" max="10">
+        <div id="NR1"></div>
+        <div id="VR1"></div>
+        <input type="range" id="R2" name="range2" min="0" max="10">
+        <div id="NR2"></div>
+        <div id="VR2"></div>
+        <input type="range" id="R3" name="range3" min="0" max="10">
+        <div id="NR3"></div>
+        <div id="VR3"></div>
+    </div>
+
+    <div id="buttonPanel">
+        <input type="checkbox" id="rotating" name="rotating" checked=true>
+        <div id="NCB1"><</div>
+        <button id="B1" name="button1"></button>
+        <button id="B2" name="button2"></button>
+        <button id="B3" name="button3"></button>
+        <button id="B4" name="button4"></button>
+    </div>
+
+</div>
+
+</body>
+</html>
