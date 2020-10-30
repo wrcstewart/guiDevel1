@@ -18,6 +18,8 @@ $("#"+idStr).css({
 "top":t+"%",
 "height":h+"%",
 "visibility": "visible",
+    "box-sizing":"border-box",
+    "border-style":"none"
 })
 
 
@@ -137,9 +139,72 @@ let ready = $(document).ready(function () {
     aDiv.appendChild(aTextArea);
   initC("aTextAreaID", "Blue", 4, 90, 4, 90);
 
+//----------------------
+//devel code for rule construct
+
+    var colRuleDiv = "Red";
+    var colInputCanvas = "Gray";
+    var colInputT = "LightSteelBlue";
+    var colStateTopT="LightSteelBlue"; var colStateBottomT="LightSteelBlue";
+    var colStateCanvas= "Gray"; var colOutputT="LightSteelBlue";
+    var colOutputCanvas ="Gray";
+
+    var x = 40;
+    var y = 1;
+
+    var w = 10;
+    var barH = 1;
+    var rows = 30;
+    var h = barH * rows;
+
+    var ruleIx = 23;//test num
+
+    var idRuleDivId = "ruleDivId" + ruleIx.toString();
+    var ruleDiv = document.createElement("div");
+    ruleDiv.id = idRuleDivId;
+    document.body.appendChild(ruleDiv);//need to append using variable as doc doesnt recognise it yet.
+    initC(idRuleDivId, colRuleDiv, x, w , y, h);
+
+   function addNode(parentNodeId,tagString,ix,x,w,y,h,col){
+
+       var parentNode = document.getElementById(parentNodeId);
+
+       var newNode = document.createElement(tagString);
+
+       var nodeID = tagString + ix.toString();
+
+       newNode.id = nodeID;
+
+       document.getElementById(parentNodeId).appendChild(newNode);
+
+       initC(nodeID,col,x,w,y,h);
+
+
+   }
+
+addNode("mainPanel","div",1,80,5,10,6,colRuleDiv);
+
+   addNode("div1","textarea",2, 0,100,0,10,colInputT);
+    addNode("div1","canvas",3, 0,100,10,10,colInputCanvas);
+    addNode("div1","textarea",4, 0,100,20,10,colStateTopT);
+
+    addNode("div1","canvas",5, 0,100,30,40,colInputCanvas);
+
+    addNode("div1","textarea",6 ,0,100,70,10,colStateBottomT);
+    addNode("div1","canvas",7, 0,100,80,10,colOutputCanvas);
+    addNode("div1","textarea",8, 0,100,90,10,colOutputT);
+
+
+
+
+
+
+
 
 
 })
+
+
 
 </script>
 
