@@ -37,9 +37,9 @@ let ready = $(document).ready(function () {
 
 //Set up GUI
     {
-        initC("mainPanel", "Gray", 5, 90, 5, 300);
+        initC("mainPanel1", "Blue", 5, 90, 5, 100);
 
-        initC("c", "Black", 5, 160, 5, 45);
+        //initC("c", "Black", 5, 160, 5, 45);
         initC("rangePanel", "LightGray", 2, 68, 62, 16);
         initC("buttonPanel", "LightGray", 72, 26, 62, 16);
         initC("rotating", "LightGreen", 0, 10, 50, 20);
@@ -116,48 +116,11 @@ let ready = $(document).ready(function () {
     }
 
 
-   /* var aDiv = document.createElement("div");
-    aDiv.id = "aDivID";
-
-    document.body.appendChild(aDiv);
-    initC("aDivID", "Red", 1, 20 , 2, 20);
-
-
-   var aTextArea = document.createElement("textarea");
-   aTextArea.id = "aTextAreaID";
-    aDiv.appendChild(aTextArea);
-  initC("aTextAreaID", "Blue", 4, 90, 4, 90);
-*/
 
 
 
 
-//----------------------
-//devel code for rule construct
 
-   /* var colRuleDiv = "Green";
-    var colInputCanvas = "Gray";
-    var colInputT = "LightSteelBlue";
-    var colStateTopT="LightSteelBlue"; var colStateBottomT="LightSteelBlue";
-    var colStateCanvas= "Gray"; var colOutputT="LightSteelBlue";
-    var colOutputCanvas ="Gray";
-
-    var x = 40;
-    var y = 1;
-
-    var w = 10;
-    var barH = 1;
-    var rows = 30;
-    var h = barH * rows;
-
-    var ruleIx = 23;//test num
-
-    var idRuleDivId = "ruleDivId" + ruleIx.toString();
-    var ruleDiv = document.createElement("div");
-    ruleDiv.id = idRuleDivId;
-    document.body.appendChild(ruleDiv);//need to append using variable as doc doesnt recognise it yet.
-    initC(idRuleDivId, colRuleDiv, x, w , y, h);
-    */
 
 
 
@@ -197,7 +160,10 @@ let ready = $(document).ready(function () {
         var ruleIndex = ix; //for readability
         var parentId =    "RULE" + ruleIndex.toString();
 
-        addNode("mainPanel","div","RULE",ruleIndex,x,5,y,6,colRuleDiv);
+
+
+        addNode("mainPanel1","div","RULE",ruleIndex,x,5,y,6,colRuleDiv);
+
         addNode(parentId,"textarea","IT",ruleIndex, 0,100,0,barHeight,colInputT);
         addNode(parentId,"canvas","IC",ruleIndex, 0,100,10,10,colInputCanvas);
         addNode(parentId,"textarea","STT",ruleIndex, 0,100,20,10,colStateTopT);
@@ -210,32 +176,12 @@ let ready = $(document).ready(function () {
 
     }
 
-ruleIndex =1;
 
-/*addNode("mainPanel","div","RULE",ruleIndex,80,5,10,6,colRuleDiv);
-
-temp = "RULE1";
-
-   addNode(temp,"textarea","IT",ruleIndex, 0,100,0,10,colInputT);
-    addNode(temp,"canvas","IC",ruleIndex, 0,100,10,10,colInputCanvas);
-    addNode(temp,"textarea","STT",ruleIndex, 0,100,20,10,colStateTopT);
-
-    addNode(temp,"canvas","SC",ruleIndex, 0,100,30,40,colInputCanvas);
-
-    addNode(temp,"textarea","STB",ruleIndex,0,100,70,10,colStateBottomT);
-    addNode(temp,"canvas","OC",ruleIndex, 0,100,80,10,colOutputCanvas);
-    addNode(temp,"textarea","OT",ruleIndex, 0,100,90,10,colOutputT);
-
-*/
-   // createRule(2,90,10);
-
+        addNode("mainPanel1","canvas","c",1,0,100,0,60,"Black");
 // next canvass and array of rules
-    for(var i=1;i<=100;i++){
+    for(var i=1;i<=10;i++){
 
-        createRule(i, i, i);
-
-
-
+        createRule(i, i*3, i*3);
     }
 
 
@@ -254,11 +200,11 @@ temp = "RULE1";
 
 
 <body>
-<div id="mainPanel" >
+<div id="mainPanel1" >
 
 
 
-    <canvas id="c" width="800" height="400"></canvas>
+
 
     <div id="rangePanel" >
         <input type="range" id="R1" name="range1" min="0" max="10">
