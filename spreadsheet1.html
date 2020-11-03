@@ -17,7 +17,47 @@
     <script type="text/javascript" src="./pqgrid.min.js" ></script>
 
     <script>
+        function initC(idStr,colStr,l,w,t,h) {
+            $("#"+idStr).css({
+
+                "background-color":colStr,
+                "position":"absolute",
+                "left":l+"%",
+                "width":w+"%",
+                "top":t+"%",
+                "height":h+"%",
+                "visibility": "visible",
+                "box-sizing":"border-box",
+                "border-style":"none"
+            })
+        }
+
+        function updateSheet(){
+            //test update
+            alert("hi");
+            data[1][1] = 6;
+            $( "#grid_array" ).pqGrid( "refresh" );
+
+
+        }
+
+        // effectively global state variables
+        var nRows =50;
+        var nColumns = 4;
+        var data =[];
+        var data2 =[];
+
+
+
+
+
+
+
         $(function(){
+
+            initC("mainPanel1", "Blue", 0, 100, 0, 100);
+            initC("button1","Red", 2,10,94,5);
+
 
             /*
             var data = [ [1,'Exxon Mobil','339,938.0','36,130.0'],
@@ -42,9 +82,41 @@
                 [20,'American Intl. Group','108,905.0','10,477.0']];
 
             */
-            var nRows =10;
-            var nColumns = 4;
-            var data =[];
+            const IX =0;
+            const TYPE =1;
+            const COND1 =2;
+            const MESSAGE =3;
+            const SP =4;
+            const BALANCE =5;
+            const ACTIVITY =6;
+            const BID0 = 7;
+            const BID_1 = 8;
+            const BID_2 =9;
+            const BID_3 =10;
+
+
+            for(var i = 0;i <nRows;i++) {
+                data2[i] = [];
+                data2[i][IX] = i;
+                data2[i][TYPE] = "TEST";
+                data2[i][COND1] = "1###0111";
+                data2[i][MESSAGE] = "10101010";
+               data2[i][SP] = 0.1;
+                data2[i][BALANCE] = 100.00;
+                data2[i][ACTIVITY] = "STOP";
+                data2[i][BID0] =10.0;
+                data2[i][BID_1] = 9.999;
+                data2[i][BID_2] = 9.998;
+                data2[i][BID_3] = 9.997;
+
+            }
+
+
+
+
+
+
+
         for(var i = 0;i <nRows;i++) {
             data[i] = [];
 
@@ -57,14 +129,30 @@
 
 
 
+
+
+
+
             var obj = {};
-            obj.width = 700;
+            obj.width = 1200;
             obj.height = 400;
-            obj.colModel = [{title:"Rank", width:100, dataType:"integer"},
-                {title:"Company", width:200, dataType:"string"},
-                {title:"Revenues ($ millions)", width:150, dataType:"float", align:"right"},
-                {title:"Profits ($ millions)", width:150, dataType:"float", align:"right"}];
-            obj.dataModel = {data:data};
+            obj.resizable = true;
+            obj.title = "test";
+            obj.toolbar = toolbar;
+            obj.editModel = {clicksToEdit:2};
+            obj.colModel = [{title:"IX", width:100, dataType:"integer"},
+                {title:"TYPE", width:200, dataType:"string"},
+                {title:"COND1", width:150, dataType:"string"},
+                {title:"MESSAGE", width:150, dataType:"string"},
+                {title:"SP", width:150, dataType:"float"},
+                {title:"BALANCE", width:150, dataType:"float"},
+                {title:"ACTIVITY", width:150, dataType:"string"},
+                {title:"BID0", width:150, dataType:"float"},
+                {title:"BID_1", width:150, dataType:"float"},
+                {title:"BID_2", width:150, dataType:"float"},
+                {title:"BID_3", width:150, dataType:"float"}
+            ];
+            obj.dataModel = {data:data2};
             $("#grid_array").pqGrid( obj );
 
         });
@@ -76,6 +164,8 @@
 
 </head>
 <body>
+<div id="mainPanel1" ></div>
 <div id="grid_array"></div>
+<button id="button1" type="button" onclick="updateSheet()">Update</button>
 </body>
 </html>
