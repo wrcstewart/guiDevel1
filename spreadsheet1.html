@@ -15,6 +15,14 @@
     <!--ParamQuery Grid files-->
     <link rel="stylesheet" href="./pqgrid.min.css" />
     <script type="text/javascript" src="./pqgrid.min.js" ></script>
+<style>
+.red {
+    color: yellow;
+
+}
+
+</style>
+
 
     <script>
         function initC(idStr,colStr,l,w,t,h) {
@@ -34,10 +42,20 @@
 
         function updateSheet(){
             //test update
-            alert("hi");
-            data[1][1] = 6;
-            $( "#grid_array" ).pqGrid( "refresh" );
+            alert(data2[0][0] * data2[0][4]);
+            data2[1][1] = 6;
 
+
+            //$(cell).removeClass();
+            //$(cell).toggleClass("myborder");
+
+            $( "#grid_array" ).pqGrid( "addClass", {rowIndx: 2, cls: 'red'} );
+            $( "#grid_array" ).pqGrid( "removeClass", {rowIndx: 2, cls: 'red'} );
+
+
+            $( "#grid_array" ).pqGrid( "refresh" );
+           // var cell = $("#grid_array").pqGrid( "getCell", {rowIndx: 2,colIndx: 3} );
+            //$(cell).css({ "border-top": "5px solid #ff0000", "border-bottom": "5px solid #ff0000","background-color":"blue" });
 
         }
 
@@ -141,19 +159,26 @@
             obj.toolbar = toolbar;
             obj.editModel = {clicksToEdit:2};
             obj.colModel = [{title:"IX", width:100, dataType:"integer"},
-                {title:"TYPE", width:200, dataType:"string"},
-                {title:"COND1", width:150, dataType:"string"},
-                {title:"MESSAGE", width:150, dataType:"string"},
-                {title:"SP", width:150, dataType:"float"},
-                {title:"BALANCE", width:150, dataType:"float"},
-                {title:"ACTIVITY", width:150, dataType:"string"},
-                {title:"BID0", width:150, dataType:"float"},
-                {title:"BID_1", width:150, dataType:"float"},
-                {title:"BID_2", width:150, dataType:"float"},
-                {title:"BID_3", width:150, dataType:"float"}
+                {title:"TYPE", width:100, dataType:"string"},
+                {title:"COND1", width:100, dataType:"string"},
+                {title:"MESSAGE", width:100, dataType:"string"},
+                {title:"SP", width:100, dataType:"float"},
+                {title:"BALANCE", width:100, dataType:"float"},
+                {title:"ACTIVITY", width:100, dataType:"string"},
+                {title:"BID0", width:100, dataType:"float"},
+                {title:"BID_1", width:100, dataType:"float"},
+                {title:"BID_2", width:100, dataType:"float"},
+                {title:"BID_3", width:100, dataType:"float"}
             ];
             obj.dataModel = {data:data2};
+
+
+
             $("#grid_array").pqGrid( obj );
+
+
+
+
 
         });
     </script>
