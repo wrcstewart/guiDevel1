@@ -1,4 +1,6 @@
+
 <!DOCTYPE html>
+<!--pqGrid Work-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,12 +11,18 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 
+
     <!--Include Touch Punch file to provide support for touch devices
     <script type="text/javascript" src="path to touch-punch.js" ></script> -->
 
     <!--ParamQuery Grid files-->
     <link rel="stylesheet" href="./pqgrid.min.css" />
     <script type="text/javascript" src="./pqgrid.min.js" ></script>
+
+    <script src="./handsontable/dist/handsontable.full.min.js"></script>
+    <link href="./handsontable/dist/handsontable.full.min.css" rel="stylesheet" media="screen">
+
+
 <style>
 .red {
     color: yellow;
@@ -25,6 +33,8 @@
 
 
     <script>
+        //import {getCell} from "./handsontable/test/helpers/common";
+
         function initC(idStr,colStr,l,w,t,h) {
             $("#"+idStr).css({
 
@@ -49,13 +59,28 @@
             //$(cell).removeClass();
             //$(cell).toggleClass("myborder");
 
-            $( "#grid_array" ).pqGrid( "addClass", {rowIndx: 2, cls: 'red'} );
-            $( "#grid_array" ).pqGrid( "removeClass", {rowIndx: 2, cls: 'red'} );
+            var className = 'red';
+
+
+            $( "#grid_array" ).pqGrid( "addClass", {rowIndx: 2, dataIndx:2, cls: className} );
+           // $( "#grid_array" ).pqGrid( "removeClass", {rowIndx: 2, dataIndx:2, cls: 'red'} );
 
 
             $( "#grid_array" ).pqGrid( "refresh" );
            // var cell = $("#grid_array").pqGrid( "getCell", {rowIndx: 2,colIndx: 3} );
             //$(cell).css({ "border-top": "5px solid #ff0000", "border-bottom": "5px solid #ff0000","background-color":"blue" });
+
+            text = 'Some data I want to export';
+            var data = new Blob([text], {type: 'text/plain'});
+
+            var url = window.URL.createObjectURL(data);
+
+
+            $( ".#grid_array" ).pqGrid( "exportCsv", { url: url } );
+
+
+            document.getElementById('download_link').href = url;
+
 
         }
 
@@ -64,6 +89,7 @@
         var nColumns = 4;
         var data =[];
         var data2 =[];
+        var data4 =[];
 
 
 
@@ -73,8 +99,19 @@
 
         $(function(){
 
-            initC("mainPanel1", "Blue", 0, 100, 0, 100);
+            initC("mainPanel1", "Blue", 0, 100, 0, 50);
             initC("button1","Red", 2,10,94,5);
+            initC("download_link","Black",50,30,90,10);
+            initC("example","Green",0,100,60,30);
+            initC("export-file","Yellow", 40,10,65,10);
+
+            var data3 = [
+                ['', 'Ford', 'Tesla', 'Toyota', 'Honda'],
+                ['2017', 10, 11, 12, 13],
+                ['2018', 20, 11, 14, 13],
+                ['2019', 30, 15, 12, 13]
+            ];
+
 
 
             /*
@@ -129,7 +166,21 @@
 
             }
 
+            for(var i = 0;i <nRows;i++) {
+                data4[i] = [];
+                data4[i][IX] = i;
+                data4[i][TYPE] = "TEST";
+                data4[i][COND1] = "1###0111";
+                data4[i][MESSAGE] = "10101010";
+                data4[i][SP] = 0.1;
+                data4[i][BALANCE] = 100.00;
+                data4[i][ACTIVITY] = "STOP";
+                data4[i][BID0] =10.0;
+                data4[i][BID_1] = 9.999;
+                data4[i][BID_2] = 9.998;
+                data4[i][BID_3] = 9.997;
 
+            }
 
 
 
@@ -176,6 +227,60 @@
 
             $("#grid_array").pqGrid( obj );
 
+            var container = document.getElementById('example');
+            var hot = new Handsontable(container, {
+                data: data4,
+                rowHeaders: true,
+                colHeaders: false,
+                filters: true,
+                dropdownMenu: true,
+                width:'50%',
+                height:'30%',
+
+                licenseKey: 'non-commercial-and-evaluation'
+            });
+
+            var myCell = hot.getCell(2,2);
+
+
+            myCell.style.backgroundColor = "Blue";
+            myCell.className = "red";
+
+
+            var button1 = document.getElementById('export-file');
+            var exportPlugin1 = hot.getPlugin('exportFile');
+
+            button1.addEventListener('click', function() {
+                var myCell = hot.getCell(36,2);
+
+                var myVal = hot.getDataAtCell(3,3);
+
+                alert(myVal);
+
+             hot.setCellMeta(3,3,"color","Blue");
+
+
+
+
+               // myCell.style.backgroundColor = "Blue";
+
+                /*
+                exportPlugin1.downloadFile('csv', {
+                    bom: false,
+                    columnDelimiter: ',',
+                    columnHeaders: false,
+                    exportHiddenColumns: true,
+                    exportHiddenRows: true,
+                    fileExtension: 'csv',
+                    filename: 'HandsontableFile',
+                    mimeType: 'text/csv',
+                    rowDelimiter: '\r\n',
+                    rowHeaders: true
+                });
+
+
+                 */
+            });
 
 
 
@@ -192,5 +297,8 @@
 <div id="mainPanel1" ></div>
 <div id="grid_array"></div>
 <button id="button1" type="button" onclick="updateSheet()">Update</button>
+<a id="download_link" download="my_exported_file2.txt" href=”” >Download as Text File</a>
+<div id="example"></div>
+<button id="export-file" >Download CSV</button>
 </body>
 </html>
