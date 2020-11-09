@@ -90,8 +90,10 @@
             initC("mainPanel1", "Blue", 0, 100, 0, 100);
             initC("button1", "Red", 2, 10, 94, 5);
             initC("export-file", "Yellow", 20, 10, 94, 5);
-            initC("read","Green",40,10,94,5);
+
             initC("inputfile","Red",55,10,95,5);
+
+            initC("output","Red",0,80,85,5);
 
 
             const IX = 0;
@@ -273,24 +275,48 @@
                     }
                 }
             }//end export csv function
-            var inputString;
-            function readFile(){
+            //take out function call
+
+
                 document.getElementById('inputfile')
                     .addEventListener('change', function() {
 
                         var fr=new FileReader();
-                        fr.onload=function(){
-                           // document.getElementById('output')
-                              //  .textContent=fr.result;
-                            inputString = fr.result;
-                        }
-                        alert("hi");
-
                         fr.readAsText(this.files[0]);
 
-                    })
-            }
 
+
+                        fr.onload=function(){
+                           document.getElementById('output').textContent=fr.result;
+                            var x = document.getElementById('output').textContent;
+                            updateDataArray(x);
+                        }
+
+
+
+                        //fr.readAsText(this.files[0]);
+
+                        //var inputString1 = document.getElementById('output').textContent;
+
+                       // alert(inputString);
+
+                        //var inputString = fr.result;
+
+                        //fr.readAsText(this.files[0]);
+
+                        //alert(inputString1);
+
+                    })
+
+                function updateDataArray(aString){
+
+                var inputArray = JSON.parse(aString);
+
+
+
+
+
+                }
 
 
         });
@@ -306,8 +332,9 @@
 <div id="grid_array"></div>
 <button id="button1" type="button" onclick="updateSheet()">Update</button>
 <button id="export-file" >Download CSV</button>
-<button id= "read" type ="button" onclick ="readFile()" >Read File</button>
+
 <input type="file" name="inputfile"
        id="inputfile">
+<pre id="output"></pre>
 </body>
 </html>
