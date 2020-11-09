@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<!--pqGrid Work-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--jQuery dependencies-->
+    <link rel="stylesheet"
+          href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+
+
+    <!--Include Touch Punch file to provide support for touch devices
+    <script type="text/javascript" src="path to touch-punch.js" ></script> -->
+
+    <!--ParamQuery Grid files-->
+    <link rel="stylesheet" href="./pqgrid.min.css" />
+    <script type="text/javascript" src="./pqgrid.min.js" ></script>
+
+
+
+
+<style>
+.red {
+    color: yellow;
+
+}
+
+</style>
+
+
+    <script>
+
+
+        function initC(idStr,colStr,l,w,t,h) {
+            $("#"+idStr).css({
+
+                "background-color":colStr,
+                "position":"absolute",
+                "left":l+"%",
+                "width":w+"%",
+                "top":t+"%",
+                "height":h+"%",
+                "visibility": "visible",
+                "box-sizing":"border-box",
+                "border-style":"none"
+            })
+        }
+
+        function updateSheet(){
+            //test update
+            alert(data2[0][0] * data2[0][4]);
+            data2[1][1] = 6;
+
+
+            //$(cell).removeClass();
+            //$(cell).toggleClass("myborder");
+
+            var className = 'red';
+
+
+            $( "#grid_array" ).pqGrid( "addClass", {rowIndx: 2, dataIndx:2, cls: className} );
+           // $( "#grid_array" ).pqGrid( "removeClass", {rowIndx: 2, dataIndx:2, cls: 'red'} );
+
+
+            $( "#grid_array" ).pqGrid( "refresh" );
+           // var cell = $("#grid_array").pqGrid( "getCell", {rowIndx: 2,colIndx: 3} );
+            //$(cell).css({ "border-top": "5px solid #ff0000", "border-bottom": "5px solid #ff0000","background-color":"blue" });
+
+
+        }
+
+        // effectively global state variables
+        var nRows =5;
+        var nColumns = 4;
+        var data2 =[];
+        var data2WithHeader =[];
+
+
+
+
+
+
+
+
+        $(function() {
+
+            initC("mainPanel1", "Blue", 0, 100, 0, 100);
+            initC("button1", "Red", 2, 10, 94, 5);
+            initC("export-file", "Yellow", 20, 10, 94, 5);
+            initC("read","Green",40,10,94,5);
+            initC("inputfile","Red",55,10,95,5);
+
+
+            const IX = 0;
+            const TYPE = 1;
+            const COND1 = 2;
+            const MESSAGE = 3;
+            const SP = 4;
+            const BALANCE = 5;
+            const ACTIVITY = 6;
+            const BID0 = 7;
+            const BID_1 = 8;
+            const BID_2 = 9;
+            const BID_3 = 10;
+
+            var colNamesOnly = ["IX", "TYPE", "COND1", "MESSAGE", "SP", "BALANCE", "ACTIVITY", "BID0", "BID_1", "BID_2", "BID_3"];
+
+
+
+
+
+            for(var i = 0;i <nRows;i++) {
+                data2[i] = [];
+                data2[i][IX] = i;
+                data2[i][TYPE] = "TEST";
+                data2[i][COND1] = "1###0111";
+                data2[i][MESSAGE] = "10101010";
+                data2[i][SP] = 0.1;
+                data2[i][BALANCE] = 100.00;
+                data2[i][ACTIVITY] = "STOP";
+                data2[i][BID0] =10.0;
+                data2[i][BID_1] = 9.999;
+                data2[i][BID_2] = 9.998;
+                data2[i][BID_3] = 9.997;
+
+            }
+
+
+
+
+
+          data2WithHeader[0] =[];
+            for (var j = 0; j < colNamesOnly.length; j++)  data2WithHeader[0][j] = colNamesOnly[j];
+
+
+            for(var i = 1;i <=nRows;i++) {
+                data2WithHeader[i] = [];
+                data2WithHeader[i][IX] = data2[i-1][IX];
+                data2WithHeader[i][TYPE] = data2[i-1][TYPE];
+                data2WithHeader[i][COND1] = data2[i-1][COND1];
+                data2WithHeader[i][MESSAGE] = data2[i-1][MESSAGE];
+                 data2WithHeader[i][SP] = data2[i-1][SP];
+                data2WithHeader[i][BALANCE] = data2[i-1][BALANCE];
+                data2WithHeader[i][ACTIVITY] = data2[i-1][ACTIVITY];
+                data2WithHeader[i][BID0] = data2[i-1][BID0];
+                data2WithHeader[i][BID_1] = data2[i-1][BID_1];
+                data2WithHeader[i][BID_2] = data2[i-1][BID_2];
+                data2WithHeader[i][BID_3] = data2[i-1][BID_3];
+
+            }
+
+
+
+
+
+
+
+
+
+      /*  for(var i = 0;i <nRows;i++) {
+            data[i] = [];
+
+            for (var j = 0; j < nColumns; j++) {
+
+                data[i][j] = 100*i +j;
+
+            }
+        }
+       */
+
+
+
+
+
+
+
+            var obj = {};
+            obj.width = "60%";
+            obj.height = "80%";
+            obj.resizable = true;
+            obj.title = "test";
+            obj.toolbar = toolbar;
+            obj.editModel = {clicksToEdit:2};
+
+           // obj.showHeader = true;
+
+             obj.colModel = [{title:"IX", width:100, dataType:"integer"},
+                {title:"TYPE", width:100, dataType:"string"},
+                {title:"COND1", width:100, dataType:"string"},
+                {title:"MESSAGE", width:100, dataType:"string"},
+                {title:"SP", width:100, dataType:"float"},
+                {title:"BALANCE", width:100, dataType:"float"},
+                {title:"ACTIVITY", width:100, dataType:"string"},
+                {title:"BID0", width:100, dataType:"float"},
+                {title:"BID_1", width:100, dataType:"float"},
+                {title:"BID_2", width:100, dataType:"float"},
+                {title:"BID_3", width:100, dataType:"float"}
+            ];
+
+
+            obj.dataModel = {data:data2};
+
+
+
+            $("#grid_array").pqGrid( obj );
+
+
+            //ready to test
+            var button1 = document.getElementById('export-file');
+
+            button1.addEventListener('click', function() {
+
+
+                exportToCsv("MaryJSONArray.txt", data2);
+
+                //document.getElementById('download_link').click();
+
+               // alert("not downloading");
+
+            });
+            //function below found on stack overflow - contrib josef harush
+            // https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
+            //https://jsfiddle.net/jossef/m3rrLzk0/
+
+            function exportToCsv(filename, rows) {
+                var processRow = function (row) {
+                    var finalVal = '';
+                    for (var j = 0; j < row.length; j++) {
+                        var innerValue = row[j] === null ? '' : row[j].toString();
+                        if (row[j] instanceof Date) {
+                            innerValue = row[j].toLocaleString();
+                        };
+                        var result = innerValue.replace(/"/g, '""');
+                        if (result.search(/("|,|\n)/g) >= 0)
+                            result = '"' + result + '"';
+                        if (j > 0)
+                            finalVal += ',';
+                        finalVal += result;
+                    }
+                    return finalVal + '\n';
+                };
+
+                var csvFile = '';
+                for (var i = 0; i < rows.length; i++) {
+                    csvFile += processRow(rows[i]);
+                }
+
+                //var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+
+
+                var jsonString = JSON.stringify(rows);
+
+
+                var blob = new Blob([jsonString], {type:'text/plain'});
+
+
+                if (navigator.msSaveBlob) { // IE 10+
+                    navigator.msSaveBlob(blob, filename);
+                } else {
+                    var link = document.createElement("a");
+                    if (link.download !== undefined) { // feature detection
+                        // Browsers that support HTML5 download attribute
+                        var url = URL.createObjectURL(blob);
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", filename);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                }
+            }//end export csv function
+            var inputString;
+            function readFile(){
+                document.getElementById('inputfile')
+                    .addEventListener('change', function() {
+
+                        var fr=new FileReader();
+                        fr.onload=function(){
+                           // document.getElementById('output')
+                              //  .textContent=fr.result;
+                            inputString = fr.result;
+                        }
+                        alert("hi");
+
+                        fr.readAsText(this.files[0]);
+
+                    })
+            }
+
+
+
+        });
+    </script>
+
+
+
+
+
+</head>
+<body>
+<div id="mainPanel1" ></div>
+<div id="grid_array"></div>
+<button id="button1" type="button" onclick="updateSheet()">Update</button>
+<button id="export-file" >Download CSV</button>
+<button id= "read" type ="button" onclick ="readFile()" >Read File</button>
+<input type="file" name="inputfile"
+       id="inputfile">
+</body>
+</html>
