@@ -33,7 +33,6 @@
 
     <script>
 
-
         function initC(idStr,colStr,l,w,t,h) {
             $("#"+idStr).css({
 
@@ -50,9 +49,30 @@
         }
 
 
+        // some global state variables
+        const IX = 0;
+        const TYPE = 1;
+        const COND1 = 2;
+        const MESSAGE = 3;
+        const SP = 4;
+        const BALANCE = 5;
+        const STATE = 6;
+        const BID0 = 7;
+        const BID_1 = 8;
+        const BID_2 = 9;
+        const BID_3 = 10;
+
+
+        var nRows =5;
+        var nColumns = 4;
+        var data2 =[];
+        var data2WithHeader =[];
+        var inputArray= [];
+
+
 
         function updateSheet(){
-            //test update
+            //test updating button.
             //alert(data2[0][0] * data2[0][4]);
             //data2[1][1] = 6;
 
@@ -71,22 +91,9 @@
 
 
             $( "#grid_array" ).pqGrid( "refreshDataAndView" );
-           // var cell = $("#grid_array").pqGrid( "getCell", {rowIndx: 2,colIndx: 3} );
+            // var cell = $("#grid_array").pqGrid( "getCell", {rowIndx: 2,colIndx: 3} );
             //$(cell).css({ "border-top": "5px solid #ff0000", "border-bottom": "5px solid #ff0000","background-color":"blue" });
-
-
         }
-
-        // effectively global state variables
-        var nRows =5;
-        var nColumns = 4;
-        var data2 =[];
-        var data2WithHeader =[];
-        var inputArray= [];
-
-
-
-
 
 
 
@@ -96,34 +103,21 @@
             initC("mainPanel1", "Blue", 0, 100, 0, 100);
             initC("button1", "Red", 2, 10, 94, 5);
             initC("export-file", "Yellow", 20, 10, 94, 5);
-
             initC("loadJSON","Gray",40,20,94,5);
-
             initC("inputfile","Gray",5,95,50,50);
+            //initC("output","Red",0,80,85,5); -- output not needed
 
-            //initC("output","Red",0,80,85,5);
 
+            // style the load button manually
             $("#loadJSON").css({"text-align" : "center" });
             $("#loadJSON").css({"line-height" : "200%" });
 
 
-            const IX = 0;
-            const TYPE = 1;
-            const COND1 = 2;
-            const MESSAGE = 3;
-            const SP = 4;
-            const BALANCE = 5;
-            const STATE = 6;
-            const BID0 = 7;
-            const BID_1 = 8;
-            const BID_2 = 9;
-            const BID_3 = 10;
-
-            var colNamesOnly = ["IX", "TYPE", "COND1", "MESSAGE", "SP", "BALANCE", "STATE", "BID0", "BID_1", "BID_2", "BID_3"];
 
 
 
 
+            //initialise data array
 
             for(var i = 0;i <nRows;i++) {
                 data2[i] = [];
@@ -138,17 +132,13 @@
                 data2[i][BID_1] = 9.999;
                 data2[i][BID_2] = 9.998;
                 data2[i][BID_3] = 9.997;
-
             }
 
-
-
-
-
+        /*
+         // initialise with headers for possible CSV save.
+            var colNamesOnly = ["IX","TYPE","COND1","MESSAGE","SP","BALANCE","STATE","BID0","BID_1","BID_2","BID_3"];
           data2WithHeader[0] =[];
             for (var j = 0; j < colNamesOnly.length; j++)  data2WithHeader[0][j] = colNamesOnly[j];
-
-
             for(var i = 1;i <=nRows;i++) {
                 data2WithHeader[i] = [];
                 data2WithHeader[i][IX] = data2[i-1][IX];
@@ -162,32 +152,8 @@
                 data2WithHeader[i][BID_1] = data2[i-1][BID_1];
                 data2WithHeader[i][BID_2] = data2[i-1][BID_2];
                 data2WithHeader[i][BID_3] = data2[i-1][BID_3];
-
             }
-
-
-
-
-
-
-
-
-
-      /*  for(var i = 0;i <nRows;i++) {
-            data[i] = [];
-
-            for (var j = 0; j < nColumns; j++) {
-
-                data[i][j] = 100*i +j;
-
-            }
-        }
-       */
-
-
-
-
-
+        */
 
 
             var obj = {};
@@ -198,7 +164,7 @@
             obj.toolbar = toolbar;
             obj.editModel = {clicksToEdit:2};
 
-           // obj.showHeader = true;
+             // obj.showHeader = true;
 
              obj.colModel = [{title:"IX", width:100, dataType:"integer"},
                 {title:"TYPE", width:100, dataType:"string"},
@@ -213,50 +179,32 @@
                 {title:"BID_3", width:100, dataType:"float"}
             ];
 
-
-            obj.dataModel = {data:data2};
-
-
+             obj.dataModel = {data:data2};
 
             $("#grid_array").pqGrid( obj );
 
 
 
-            //ready to test
+            //********json save button filename based on time stamp*********
             var button1 = document.getElementById('export-file');
-
             button1.addEventListener('click', function() {
-
-
-
-               var d = new Date();
+                var d = new Date();
                var n =d.getTime();
                 var tempFileName = 'EXPT1' + (Math.round(n/1000)).toString() +'.txt';
                // exportToCsv(tempFileName, obj); //by passes data2 later whilst developing.
                 $( "#grid_array" ).pqGrid( "refreshDataAndView" );
-
-
                 var grid3 = $( "#grid_array" ).pqGrid( "getInstance" ).grid;
                 var myObj = grid3.options;
-
-
-
-
-
-
-               saveJSON(tempFileName,myObj);
+                //basics of function below found on stack overflow - contrib josef harush
+                // https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
+                //https://jsfiddle.net/jossef/m3rrLzk0/
+                saveJSON(tempFileName,myObj);
                 //saveJSON(tempFileName,grid3);
-
                 //document.getElementById('download_link').click();
-
-               // alert("not downloading");
-
+                // alert("not downloading");
             });
-            //function below found on stack overflow - contrib josef harush
-            // https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
-            //https://jsfiddle.net/jossef/m3rrLzk0/
 
-            function exportToCsv(filename, rows) {
+       /*     function exportToCsv(filename, rows) {
                 var processRow = function (row) {
                     var finalVal = '';
                     for (var j = 0; j < row.length; j++) {
@@ -306,8 +254,9 @@
                     }
                 }
             }//end export csv function
-            //take out function call
 
+
+        */
             function saveJSON(filename,obj2) {
 
                 var jsonString = JSON.stringify(obj2);
@@ -327,81 +276,45 @@
                         document.body.removeChild(link);
                     }
                 }
-
             }
+            //******end of saving stuff********
 
 
 
 
 
-
-
-
-
-
-
-                document.getElementById('inputfile')
+            document.getElementById('inputfile')
                     .addEventListener('change', function() {
-
                         var fr=new FileReader();
                         fr.readAsText(this.files[0]);
-
-
-
                         fr.onload=function(){
                            //document.getElementById('output').textContent= fr.result;
                             //var x = document.getElementById('output').textContent;
                             var x = fr.result;
-
-
                             updateDataArray(x);
                         }
-
-
-
                         //fr.readAsText(this.files[0]);
-
                         //var inputString1 = document.getElementById('output').textContent;
-
-                       // alert(inputString);
-
+                        // alert(inputString);
                         //var inputString = fr.result;
-
                         //fr.readAsText(this.files[0]);
-
                         //alert(inputString1);
-
                     })
 
                 function updateDataArray(aString){
-
-                //data2 = JSON.parse(aString);
-
-
+                    //data2 = JSON.parse(aString);
                     var obj =  JSON.parse(aString);
-
-
-
-
-                   // $( "#grid_array" ).pqGrid( "option","dataModel.data",data2 );
-
-
+                    // $( "#grid_array" ).pqGrid( "option","dataModel.data",data2 );
                     $("#grid_array").pqGrid("destroy");
 
                     $("#grid_array").pqGrid( obj );
 
                     $( "#grid_array" ).pqGrid( "refreshDataAndView" );
-
-
-
                 }
 
 
-        });
+        });//end of on load fuction.
     </script>
-
-
-
 
 
 </head>
@@ -411,16 +324,10 @@
 <button id="button1" type="button" onclick="updateSheet()">Update Test</button>
 <button id="export-file" >Save JSON</button>
 <div id="loadJSON">Open JSON
-<input type="file" name="inputfile"
-       id="inputfile">
-
+    <input type="file" name="inputfile" id="inputfile">
 </div>>
-
 <!-- during devel of file input / may need putting back if prog shows bugs in testing
 <pre id="output"></pre>
 -->
-
-
-
 </body>
 </html>
