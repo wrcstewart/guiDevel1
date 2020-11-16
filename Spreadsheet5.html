@@ -23,10 +23,31 @@
 
 
 <style>
-.red {
-    color: yellow;
 
-}
+    .redState {
+         background-color: rgb(100%,70%,70%)
+
+    }
+
+    .yellowState {
+
+        background-color: rgb(100%,100%,70%)
+
+    }
+
+    .greenState {
+
+        background-color: rgb(50%,100%,50%)
+
+    }
+
+    .blueState {
+
+        background-color: rgb(7%,70%,100%)
+
+    }
+
+
 
 </style>
 
@@ -68,7 +89,45 @@
         var data2 =[];
         var data2WithHeader =[];
         var inputArray= [];
+        var states = ["STATE0","STATE1","STATE2","STATE3"];
+        var nStates = 4;
+        var curStateIx = 0;
 
+
+         function matchHash(aString,hashedString,hashChar ) {
+
+             // matches two strings of same length
+             // a hash char in second string counts as always matched
+
+             if (aString.length !== hashedString.length) return(false);
+
+
+             var len = aString.length;
+
+             for (k = 0; k < len; k++){
+
+                 if (hashedString[k] !== hashChar) {
+                     if (aString[k] !== hashedString[k]) return (false);
+                 }
+
+             };
+
+             return(true);
+
+         }
+
+
+
+
+
+
+        function step(){
+
+           if (curStateIx === nStates-1 ) {curStateIx = 1} // not 0 which is a pre start state
+            else {curStateIx++};
+
+            alert(curStateIx.toString())
+        }
 
 
         function updateSheet(){
@@ -80,7 +139,7 @@
             //$(cell).removeClass();
             //$(cell).toggleClass("myborder");
 
-            var className = 'red'; // put global.
+            var className = 'blueState'; // put global.
 
             // write an updateDisplay(row, state);
 
@@ -95,14 +154,15 @@
             //$(cell).css({ "border-top": "5px solid #ff0000", "border-bottom": "5px solid #ff0000","background-color":"blue" });
         }
 
+//-------------------------------------------main on load func------------------------------
 
 
-
-        $(function() {
+        let $1 = $(function() {
 
             initC("mainPanel1", "Blue", 0, 100, 0, 100);
             initC("button1", "Red", 2, 10, 94, 5);
-            initC("export-file", "Yellow", 20, 10, 94, 5);
+            initC("export-file", "Yellow", 20, 5, 94, 5);
+            initC("step", "Green", 30, 5, 94, 5);
             initC("loadJSON","Gray",40,20,94,5);
             initC("inputfile","Gray",5,95,50,50);
             //initC("output","Red",0,80,85,5); -- output not needed
@@ -112,6 +172,12 @@
             $("#loadJSON").css({"text-align" : "center" });
             $("#loadJSON").css({"line-height" : "200%" });
 
+
+            var hashChar = '#';
+            var matchResult = true;
+
+            matchResult = matchHash("1011","####",hashChar);
+            alert(matchResult.toString());
 
 
 
@@ -127,7 +193,7 @@
                 data2[i][MESSAGE] = "10101010";
                 data2[i][SP] = 0.1;
                 data2[i][BALANCE] = 100.00;
-                data2[i][STATE] = "PRE";
+                data2[i][STATE] = "STATE0";
                 data2[i][BID0] =10.0;
                 data2[i][BID_1] = 9.999;
                 data2[i][BID_2] = 9.998;
@@ -313,7 +379,7 @@
                 }
 
 
-        });//end of on load fuction.
+        });//end of on load function.
     </script>
 
 
@@ -323,6 +389,7 @@
 <div id="grid_array"></div>
 <button id="button1" type="button" onclick="updateSheet()">Update Test</button>
 <button id="export-file" >Save JSON</button>
+<button id="step" type="button" onclick="step()"Step></button>
 <div id="loadJSON">Open JSON
     <input type="file" name="inputfile" id="inputfile">
 </div>>
