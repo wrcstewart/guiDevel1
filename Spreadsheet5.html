@@ -92,6 +92,8 @@
         var states = ["STATE0","STATE1","STATE2","STATE3"];
         var nStates = 4;
         var curStateIx = 0;
+        var condLength =8;
+        var msgLength = 8;
 
 
          function matchHash(aString,hashedString,hashChar ) {
@@ -121,14 +123,19 @@
 
 
 
-        function step(){
+       /* function step(){
 
            if (curStateIx === nStates-1 ) {curStateIx = 1} // not 0 which is a pre start state
             else {curStateIx++};
 
-            alert(curStateIx.toString())
-        }
 
+            initRules(data2,1,4,"I","10###555","11005555",1.0,100.0,10.0);
+            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
+
+
+           // alert(curStateIx.toString())
+        }
+*/
 
         function updateSheet(){
             //test updating button.
@@ -174,15 +181,134 @@
 
 
             var hashChar = '#';
-            var matchResult = true;
+            //var matchResult = true;
 
-            matchResult = matchHash("1011","####",hashChar);
-            alert(matchResult.toString());
-
-
+            //matchResult = matchHash("1011","####",hashChar);
+           // alert(matchResult.toString());
 
 
+            function initRules(d,ixStart,ixEnd,ruleType,initCond,initMsg,initSp,initBal,initBid){
+                //d is the data array.
+                //ix same as row in spreadsheet
+                //function called to initialise rows between ixStart and ixEnd, inclusive.
+                // ruleType - "D" for detector,"E" for effector, "I" for internal
 
+                // cond and msg are strings that determine how to init condition and message of rules.
+                //they include an optional randomising feature
+                // see global declaration for details.
+
+                // other parameters are initial specificity, balance (fitness), and bid.
+
+                // usually the D and E rows will be called first in the first few rows
+                //then one or more row blocks of internal rules.
+
+
+
+                for(var r = ixStart;r < ixEnd; r++){ //row loop
+
+                    var msg, cond;
+
+                    if (ruleType === "D"){
+                        cond =""; msg = getMsg(initMsg);
+                    }
+                    if (ruleType === "E"){
+                        cond = getCond(initCond); msg = "";
+                    }
+
+                    if (ruleType === "I"){
+                        cond =getCond(initCond);
+                        msg = getMsg(initMsg);
+                    }
+
+                    d[r][IX] = r;
+                    d[i][TYPE] = ruleType;
+                    d[i][COND1] = cond;
+                    d[i][MESSAGE] = msg;
+                    d[i][SP] = initSp;
+                    d[i][BALANCE] = initBal;
+                    d[i][STATE] = "INIT";
+                    d[i][BID0] =initBid;
+                    d[i][BID_1] = initBid;
+                    d[i][BID_2] = initBid;
+                    d[i][BID_3] = initBid;
+                    
+                }
+            } //after calling don't forget refresh!
+
+
+
+
+
+
+            //************************************************
+
+           // format of init strings for cond and msg strings.
+            //same number of chars as cond and msg.
+            //a cond or msg string is a sequence out of 0,1,#
+            // for example if the length is 8 then 1100#1#1
+            // 1 or 0 or # are literal. ie 1 or 0 or #
+            //
+            // in a message string 5 means 50% randomisation of 1 and 0
+            // in a cond string 5 means 50% randomisation of # ; 1 25% 0 25%
+            // similarly for all numbers 2 or above
+            // eg 2 in msg means 20% chance of 1 and 80% of 0
+            // 2 in cond string means 20% chance of # and 40% 1 40% 0
+
+            // the init cond for a detector is ""
+            //the init msg for an effector is ""
+
+            function getMsg(initMsg){
+
+                var baseChar = [];
+
+
+                var bound =1.0;
+                var pick =1.0;
+
+                for(i=0;i<msgLength;i++){
+                    if(initMsg[i] === '0') {baseChar[i] = '0'; continue}
+                    if(initMsg[i] === '1') {baseChar[i] = '1'; continue}
+                    bound = initMsg[i]/10.0;//therefore tween 0,2 and 0.9
+                    pick = Math.random();
+                    if (pick <= bound) {baseChar[i] = '1'; continue}
+                    baseChar[i] = '0';
+
+                }
+            return(baseChar.join(""));
+                // for reference use spli to go the other way. String to char array
+            }
+
+           // var myChar = [];
+           // myChar[0]  ='a'; myChar[1] ='b';
+           // var myString = myChar.join("");
+
+
+
+
+            function getCond(initCond){
+
+                var baseChar = [];
+
+
+                var bound =1.0;
+                var pick =1.0;
+
+                for(i=0;i<condLength;i++){
+                    if(initCond[i] === '0') {baseChar[i] = '0'; continue}
+                    if(initCond[i] === '1') {baseChar[i] = '1'; continue}
+                    if(initCond[i] === '#') {baseChar[i] = '#'; continue}
+                    bound = initCond[i]/10.0;//therefore tween 0,2 and 0.9
+                    pick = Math.random();
+                    if (pick <= bound) {baseChar[i] = '#'; continue}
+                    if (pick <= (0.5 + bound/2)) {{baseChar[i] = '0'; continue}}
+                    baseChar[i] = '1';
+
+                }
+                return(baseChar.join(""));
+                // for reference: use split to go the other way. String to char array
+            }
+
+            //alert( getCond("10#12222"));
             //initialise data array
 
             for(var i = 0;i <nRows;i++) {
@@ -379,6 +505,20 @@
                 }
 
 
+            function step(){
+
+                if (curStateIx === nStates-1 ) {curStateIx = 1} // not 0 which is a pre start state
+                else {curStateIx++};
+
+
+                initRules(data2,1,4,"I","10###555","11005555",1.0,100.0,10.0);
+                $( "#grid_array" ).pqGrid( "refreshDataAndView" );
+
+
+                // alert(curStateIx.toString())
+            }
+
+
         });//end of on load function.
     </script>
 
@@ -389,7 +529,7 @@
 <div id="grid_array"></div>
 <button id="button1" type="button" onclick="updateSheet()">Update Test</button>
 <button id="export-file" >Save JSON</button>
-<button id="step" type="button" onclick="step()"Step></button>
+<button id="step" type="button" onclick="step()">Step</button>
 <div id="loadJSON">Open JSON
     <input type="file" name="inputfile" id="inputfile">
 </div>>
