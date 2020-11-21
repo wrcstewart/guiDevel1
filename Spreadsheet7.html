@@ -115,7 +115,7 @@
         const BID_3 = 10;
 
 
-        var nRows =500;
+        var nRows =51;
         var nColumns = 4;
         var data2 =[];
         var data2WithHeader =[];
@@ -226,27 +226,34 @@
              return(false)
         }
 
+        function findSp(ix){
+             return( data2[ix][SP]  )
+        }
+
+
         function matchAnyPostedAndCalcBid(){
             for(ix = 0;ix<nRows;ix++){
                 if (hasConditions(ix)) {
-                  var cond = getCond(ix);
+                  var cond = findCond(ix);
                      for (r=0;r<nRows;r++){
                         if (r=== ix) continue;
 
                         if (getState(r) !== "POSTED") continue;
 
-                        msg =getMsg(r);
+                        msg =findMsg(r);
 
                         if (matchHash(msg,cond,'#')) {
 
-                            calcAndSetBid(ix)
+                            //alert(cond + "    "+msg);
+
+                            calcAndSetBid(ix);
                             setState(ix,"BID");
                         }
 
                      }
                 }
             }
-
+            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
 
         }
 
@@ -255,11 +262,18 @@
              return(data2[ix][STATE])
         }
 
+        function findMsg(ix){
+         return( data2[ix][MESSAGE]   )
+
+
+        }
+
         function calcAndSetBid(ix){
             var scale = 0.1; //Hollands "b" scale value
-            var sp = getSp(ix);
+            var sp = findSp(ix);
             var s = getFitness(ix);
             data2[ix][BID0]  = scale * sp * s;
+            //data2[ix][BID0]  = 0.3;
         }
 
         function getFitness(ix) {
@@ -371,6 +385,13 @@
             }
             return(count/L)
         }
+
+
+function findCond(ix){
+
+            return( data2[ix][COND1])
+}
+
 
 
 
