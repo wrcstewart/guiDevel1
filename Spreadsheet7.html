@@ -70,6 +70,11 @@
 
     }
 
+    .ACTIVE {
+        background-color: rgb(80%,100%,80%);
+
+    }
+
 
 
 
@@ -102,7 +107,7 @@
         const COND1 = 2;
         const MESSAGE = 3;
         const SP = 4;
-        const BALANCE = 5;
+        const FITNESS = 5;
         const STATE = 6;
         const BID0 = 7;
         const BID_1 = 8;
@@ -181,6 +186,13 @@
                 // alert(curStateIx.toString())
             }
 
+
+            if (curStateIx === 2) {
+
+                matchAnyPostedAndCalcBid();
+
+            }
+
         }
 
         function postDetectors() {
@@ -189,9 +201,10 @@
 
                 if (isDetector(ix)) {
                     setState(ix, "POSTED");
-                    $("#grid_array").pqGrid("addClass", {rowIndx: ix, cls: data2[ix][STATE]});
+                    $("#grid_array").pqGrid("addClass", {rowIndx: ix, dataIndx:MESSAGE, cls: data2[ix][STATE]});
                 }
             }
+            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
         }
 
         function typeOfRule(ix){
@@ -207,6 +220,52 @@
              data2[ix][STATE] = state;
         }
 
+        function hasConditions(ix){
+
+             if (typeOfRule(ix) === "E" || typeOfRule(ix) === "I") return(true);
+             return(false)
+        }
+
+        function matchAnyPostedAndCalcBid(){
+            for(ix = 0;ix<nRows;ix++){
+                if (hasConditions(ix)) {
+                  var cond = getCond(ix);
+                     for (r=0;r<nRows;r++){
+                        if (r=== ix) continue;
+
+                        if (getState(r) !== "POSTED") continue;
+
+                        msg =getMsg(r);
+
+                        if (matchHash(msg,cond,'#')) {
+
+                            calcAndSetBid(ix)
+                            setState(ix,"BID");
+                        }
+
+                     }
+                }
+            }
+
+
+        }
+
+        function getState(ix){
+
+             return(data2[ix][STATE])
+        }
+
+        function calcAndSetBid(ix){
+            var scale = 0.1; //Hollands "b" scale value
+            var sp = getSp(ix);
+            var s = getFitness(ix);
+            data2[ix][BID0]  = scale * sp * s;
+        }
+
+        function getFitness(ix) {
+
+            return(data2[ix][FITNESS]);
+        }
 
         function updateSheet(){
             //test updating button.
@@ -223,8 +282,8 @@
             // write an updateDisplay(row, state);
 
 
-            //$( "#grid_array" ).pqGrid( "addClass", {rowIndx: 2, dataIndx:2, cls: className} );
-            $( "#grid_array" ).pqGrid( "addClass", {rowIndx: 2, cls: data2[2][STATE]} );
+            $( "#grid_array" ).pqGrid( "addClass", {rowIndx: 2, dataIndx:2, cls: className} );
+            //$( "#grid_array" ).pqGrid( "addClass", {rowIndx: 2, cls: data2[2][STATE]} );
             //$( "#grid_array" ).pqGrid( "removeClass", {rowIndx: 2, dataIndx:2, cls: className} );
 
 
@@ -250,7 +309,7 @@
             $( "#grid_array" ).pqGrid( "refreshDataAndView" );
         }
 */
-        function initRules(d,ixStart,ixEnd,ruleType,initCond,initMsg,initSp,initBal,initBid){
+        function initRules(d,ixStart,ixEnd,ruleType,initCond,initMsg,initSp,initFit,initBid){
             //d is the data array.
             //ix same as row in spreadsheet
             //function called to initialise rows between ixStart and ixEnd, inclusive.
@@ -260,7 +319,7 @@
             //they include an optional randomising feature
             // see global declaration for details.
 
-            // other parameters are initial specificity, balance (fitness), and bid.
+            // other parameters are initial specificity, FITNESS (fitness), and bid.
 
             // usually the D and E rows will be called first in the first few rows
             //then one or more row blocks of internal rules.
@@ -269,17 +328,21 @@
 
             for(var r = ixStart;r <= ixEnd; r++){ //row loop
 
-                var msg, cond;
+                var msg, cond, sp;
+                sp = initSp;
 
                 if (ruleType === "D"){
                     cond =""; msg = getMsg(initMsg);
+                    sp = 0;
                 }
                 if (ruleType === "E"){
                     cond = getCond(initCond); msg = "";
+                    sp = getSp(cond);
                 }
 
                 if (ruleType === "I"){
                     cond =getCond(initCond);
+                    sp = getSp(cond);
                     msg = getMsg(initMsg);
                 }
 
@@ -287,8 +350,8 @@
                 d[r][TYPE] = ruleType;
                 d[r][COND1] = cond;
                 d[r][MESSAGE] = msg;
-                d[r][SP] = initSp;
-                d[r][BALANCE] = initBal;
+                d[r][SP] = sp;
+                d[r][FITNESS] = initFit;
                 d[r][STATE] = "INIT";
                 d[r][BID0] =initBid;
                 d[r][BID_1] = initBid;
@@ -299,6 +362,18 @@
 
             }
         } //after calling don't forget refresh!
+
+        function getSp(cond){
+            var L = cond.length;
+            var count = L;
+            for(pos =0;pos<L;pos++){
+             if( cond[pos] === '#') count--;
+            }
+            return(count/L)
+        }
+
+
+
 
         function getMsg(initMsg){
 
@@ -417,7 +492,7 @@
                 data2[i][COND1] = "1###0111";
                 data2[i][MESSAGE] = "10101010";
                 data2[i][SP] = 0.1;
-                data2[i][BALANCE] = 100.00;
+                data2[i][FITNESS] = 100.00;
                 data2[i][STATE] = "STATE0";
                 data2[i][BID0] =10.0;
                 data2[i][BID_1] = 9.999;
@@ -430,7 +505,7 @@
 
         /*
          // initialise with headers for possible CSV save.
-            var colNamesOnly = ["IX","TYPE","COND1","MESSAGE","SP","BALANCE","STATE","BID0","BID_1","BID_2","BID_3"];
+            var colNamesOnly = ["IX","TYPE","COND1","MESSAGE","SP","FITNESS","STATE","BID0","BID_1","BID_2","BID_3"];
           data2WithHeader[0] =[];
             for (var j = 0; j < colNamesOnly.length; j++)  data2WithHeader[0][j] = colNamesOnly[j];
             for(var i = 1;i <=nRows;i++) {
@@ -440,7 +515,7 @@
                 data2WithHeader[i][COND1] = data2[i-1][COND1];
                 data2WithHeader[i][MESSAGE] = data2[i-1][MESSAGE];
                  data2WithHeader[i][SP] = data2[i-1][SP];
-                data2WithHeader[i][BALANCE] = data2[i-1][BALANCE];
+                data2WithHeader[i][FITNESS] = data2[i-1][FITNESS];
                 data2WithHeader[i][STATE] = data2[i-1][STATE];
                 data2WithHeader[i][BID0] = data2[i-1][BID0];
                 data2WithHeader[i][BID_1] = data2[i-1][BID_1];
@@ -465,7 +540,7 @@
                 {title:"COND1", width:100, dataType:"string"},
                 {title:"MESSAGE", width:100, dataType:"string"},
                 {title:"SP", width:100, dataType:"float"},
-                {title:"BALANCE", width:100, dataType:"float"},
+                {title:"FITNESS", width:100, dataType:"float"},
                 {title:"STATE", width:100, dataType:"string"},
                 {title:"BID0", width:100, dataType:"float"},
                 {title:"BID_1", width:100, dataType:"float"},
@@ -478,12 +553,12 @@
             $("#grid_array").pqGrid( obj );
             $( "#grid_array" ).pqGrid( { numberCell: {show: false} } );
 
-            initRules(data2,0,4,"D","","11005555",1.0,100.0,10.0);
+            initRules(data2,0,4,"D","","11005555",1.0,1.0,0.0);
 
-            initRules(data2,5,5,"E","10100000","",1.0,100.0,10.0);
-            initRules(data2,6,6,"E","10000000","",1.0,100.0,10.0);
+            initRules(data2,5,5,"E","10100000","",1.0,1.0,0.0);
+            initRules(data2,6,6,"E","10000000","",1.0,1.0,0.0);
 
-            initRules(data2,7,50,"I","10###555","11005555",1.0,100.0,10.0);
+            initRules(data2,7,50,"I","11###555","11005555",1.0,1.0,0.0);
 
 
             $( "#grid_array" ).pqGrid( "refreshDataAndView" );
