@@ -110,7 +110,7 @@
         const FITNESS = 5;
         const STATE = 6;
         const BID0 = 7;
-        const BID_1 = 8;
+        const ACCEPTED = 8;
         const BID_2 = 9;
         const BID_3 = 10;
 
@@ -268,11 +268,19 @@
 
         }
 
+        function rounded(x,places){
+
+            var mult = Math.pow(10,places);
+
+             return ((Math.round(x * mult))/ mult )
+
+        }
+
         function calcAndSetBid(ix){
             var scale = 0.1; //Hollands "b" scale value
             var sp = findSp(ix);
             var s = getFitness(ix);
-            data2[ix][BID0]  = scale * sp * s;
+            data2[ix][BID0]  = rounded(scale * sp * s, 6);
             //data2[ix][BID0]  = 0.3;
         }
 
@@ -368,7 +376,7 @@
                 d[r][FITNESS] = initFit;
                 d[r][STATE] = "INIT";
                 d[r][BID0] =initBid;
-                d[r][BID_1] = initBid;
+                d[r][ACCEPTED] = 0;
                 d[r][BID_2] = initBid;
                 d[r][BID_3] = initBid;
 
@@ -564,7 +572,7 @@ function findCond(ix){
                 {title:"FITNESS", width:100, dataType:"float"},
                 {title:"STATE", width:100, dataType:"string"},
                 {title:"BID0", width:100, dataType:"float"},
-                {title:"BID_1", width:100, dataType:"float"},
+                {title:"ACCEPTED", width:100, dataType:"float"},
                 {title:"BID_2", width:100, dataType:"float"},
                 {title:"BID_3", width:100, dataType:"float"}
             ];
@@ -653,8 +661,7 @@ function findCond(ix){
                         document.body.removeChild(link);
                     }
                 }
-            }//end export csv function
-
+            }//end export csv functionrounded bids
 
         */
             function saveJSON(filename,obj2) {
