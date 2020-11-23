@@ -111,9 +111,11 @@
         const STATE = 6;
         const BID0 = 7;
         const ACCEPTED = 8;
-        const BID_2 = 9;
+        const MATCHES = 9;
         const BID_3 = 10;
 
+        var rePostDetectorMessages = true;
+        // at beginning of each cycle whether to re post the detector messages
 
         var nRows =51;
         var nColumns = 4;
@@ -121,7 +123,7 @@
         var data2WithHeader =[];
         var inputArray= [];
         var states = ["STATE0","STATE1","STATE2","STATE3"];
-        var nStates = 4;
+        var nStates = 6;
         var curStateIx = 0;
         var condLength =8;
         var msgLength = 8;
@@ -193,6 +195,17 @@
 
             }
 
+           if (curStateIx === 3){
+
+               payUp();
+           }
+
+            if (curStateIx === 4){
+
+                repost();
+            }
+
+
         }
 
         function postDetectors() {
@@ -230,9 +243,21 @@
              return( data2[ix][SP]  )
         }
 
+        function fire(prob){
+
+             if (Math.random() < prob) return(true);
+             return(false)
+        }
+
+        function isAccepted(ix){
+            if (data2[ix][ACCEPTED] === 1)  return(true);
+           return(false)
+        }
+
 
         function matchAnyPostedAndCalcBid(){
             for(ix = 0;ix<nRows;ix++){
+                matchCount=0;
                 if (hasConditions(ix)) {
                   var cond = findCond(ix);
                      for (r=0;r<nRows;r++){
@@ -245,21 +270,118 @@
                         if (matchHash(msg,cond,'#')) {
 
                             //alert(cond + "    "+msg);
+                            matchCount++;
+                           var bid = calcAndSetBid(ix);
 
-                            calcAndSetBid(ix);
                             setState(ix,"BID");
+                            if (fire(bid)) {
+
+                                data2[ix][ACCEPTED] =1;
+
+                            }
+                            else {
+                                data2[ix][ACCEPTED] =0;
+                            }
                         }
 
                      }
                 }
+                data2[ix][MATCHES] = matchCount;
+
             }
+
             $( "#grid_array" ).pqGrid( "refreshDataAndView" );
 
         }
 
+        function payUp(){
+            for(ix = 0;ix<nRows;ix++){
+
+                if (hasConditions(ix)) {
+                    var cond = findCond(ix);
+                    for (r=0;r<nRows;r++){
+                        if (r=== ix) continue;
+
+                        if (getState(r) !== "POSTED") continue;
+
+                        msg =findMsg(r);
+
+                        if (matchHash(msg,cond,'#')) {
+
+                            //alert(cond + "    "+msg);
+                            if (isAccepted(ix)) {
+                                var pay = data2[ix][BID0]/data2[ix][MATCHES];
+
+                                var fitness =  data2[r][FITNESS];
+                                fitness += pay;
+                                data2[r][FITNESS]  = rounded (fitness,6);
+
+                            }
+                            //setState(ix,"BID");
+                            /*
+                            if (fire(bid)) {
+
+                                data2[ix][ACCEPTED] =1;
+
+                            }
+                            else {
+                                data2[ix][ACCEPTED] =0;
+                            }
+
+                             */
+                        }
+
+                    }
+                }
+               // data2[ix][MATCHES] = matchCount;
+
+            }
+
+
+
+            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
+
+        }
+
+
+        function hasMsg(ix) {
+
+           if (  (data2[ix][TYPE] === "D") || (data2[ix][TYPE] === "I") ) return(true);
+           return(false);
+
+        }
+
+        function repost(){
+
+             for(ix =0;ix<nRows;ix++){
+
+                 if( hasMsgs(ix)){
+                     if ((rePostDetectorMessages && (data2[ix][TYPE] === "D" )   ) || isAccepted(ix))
+                     {setState(ix,"POSTED")}
+                     else {setState(ix,"NOT POSTED")}
+
+
+
+
+                 }
+             }
+
+
+
+
+            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
+        }
+
+
         function getState(ix){
 
              return(data2[ix][STATE])
+        }
+
+        function isPosted(ix){
+
+             if (getState(ix) === "POSTED") return (true);
+             return(false)
         }
 
         function findMsg(ix){
@@ -277,11 +399,13 @@
         }
 
         function calcAndSetBid(ix){
-            var scale = 0.1; //Hollands "b" scale value
+            var scale = 0.95; //Hollands "b" scale value
             var sp = findSp(ix);
             var s = getFitness(ix);
-            data2[ix][BID0]  = rounded(scale * sp * s, 6);
-            //data2[ix][BID0]  = 0.3;
+            var bid;
+            bid = rounded(scale * sp * s, 6);
+            data2[ix][BID0]  = bid;
+           return(bid)
         }
 
         function getFitness(ix) {
@@ -374,10 +498,10 @@
                 d[r][MESSAGE] = msg;
                 d[r][SP] = sp;
                 d[r][FITNESS] = initFit;
-                d[r][STATE] = "INIT";
+                d[r][STATE] = "-";
                 d[r][BID0] =initBid;
                 d[r][ACCEPTED] = 0;
-                d[r][BID_2] = initBid;
+                d[r][MATCHES] = 0;
                 d[r][BID_3] = initBid;
 
                // $( "#grid_array" ).pqGrid( "addClass", {rowIndx: r, cls: ".INIT"} );
@@ -573,7 +697,7 @@ function findCond(ix){
                 {title:"STATE", width:100, dataType:"string"},
                 {title:"BID0", width:100, dataType:"float"},
                 {title:"ACCEPTED", width:100, dataType:"float"},
-                {title:"BID_2", width:100, dataType:"float"},
+                {title:"MATCHES", width:100, dataType:"float"},
                 {title:"BID_3", width:100, dataType:"float"}
             ];
 
