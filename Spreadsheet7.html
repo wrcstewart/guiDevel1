@@ -115,8 +115,7 @@
         const BID_3 = 10;
 
         var rePostDetectorMessages = true;
-        // at beginning of each cycle whether to re post the detector messages
-
+        // at beginning of each cycle whether to re post the detector messag
         var nRows =51;
         var nColumns = 4;
         var data2 =[];
@@ -128,8 +127,10 @@
         var condLength =8;
         var msgLength = 8;
 
-        var nLoop =100;
+        var nLoop = 10;
         //determine how many steps to loop if loop button pressed
+
+        var doRefresh = true;
 
 
 
@@ -213,7 +214,12 @@
 
         function loop(){
 
+             doRefresh = false;
+
              for (k=1;k<nLoop;k++) step();
+
+             doRefresh =true;
+            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
 
         }
 
@@ -225,10 +231,11 @@
 
                 if (isDetector(ix)) {
                     setState(ix, "POSTED");
-                    $("#grid_array").pqGrid("addClass", {rowIndx: ix, dataIndx:MESSAGE, cls: data2[ix][STATE]});
+                   // $("#grid_array").pqGrid("addClass", {rowIndx: ix, dataIndx:MESSAGE, cls: data2[ix][STATE]});
                 }
             }
-            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
+
+            if(doRefresh)  $( "#grid_array" ).pqGrid( "refreshDataAndView" );
         }
 
         function typeOfRule(ix){
@@ -301,7 +308,7 @@
 
             }
 
-            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
+            if(doRefresh)  $( "#grid_array" ).pqGrid( "refreshDataAndView" );
 
         }
 
@@ -356,7 +363,7 @@
 
 
 
-            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
+            if(doRefresh)  $( "#grid_array" ).pqGrid( "refreshDataAndView" );
 
         }
 
@@ -394,7 +401,7 @@
 
 
 
-            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
+            if(doRefresh)  $( "#grid_array" ).pqGrid( "refreshDataAndView" );
         }
 
 
@@ -458,7 +465,7 @@
             //$( "#grid_array" ).pqGrid( "removeClass", {rowIndx: 2, dataIndx:2, cls: className} );
 
 
-            $( "#grid_array" ).pqGrid( "refreshDataAndView" );
+            if(doRefresh)  $( "#grid_array" ).pqGrid( "refreshDataAndView" );
         }
 
 
@@ -617,6 +624,7 @@ function findCond(ix){
             initC("button1", "Red", leftE, 18, 5, 5);
             initC("export-file", "Yellow", leftE, 18, 15, 5);
             initC("step", "Green", leftE, 18, 25, 5);
+            initC("loop", "Yellow", leftE, 18, 45, 5);
             initC("loadJSON","Gray",leftE,18,35,5);
             initC("inputfile","Gray",5,95,30,30);
             //initC("output","Red",0,80,85,5); -- output not needed
