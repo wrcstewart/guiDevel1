@@ -127,10 +127,12 @@
         var condLength =8;
         var msgLength = 8;
 
-        var nLoop = 10;
+        var nLoop = 10000;
         //determine how many steps to loop if loop button pressed
 
         var doRefresh = true;
+
+        var nEffectorPays=0;
 
 
 
@@ -216,10 +218,13 @@
 
              doRefresh = false;
 
-             for (k=1;k<nLoop;k++) step();
+
+             for (kk=1;kk<nLoop;kk++) {step()};
 
              doRefresh =true;
+
             $( "#grid_array" ).pqGrid( "refreshDataAndView" );
+            alert(nEffectorPays.toString());
 
         }
 
@@ -246,6 +251,14 @@
              if (typeOfRule(ix) === "D" ) return (true);
              return(false)
         }
+
+        function isEffector(ix){
+            if (typeOfRule(ix) === "E" ) return (true);
+            return(false)
+
+        }
+
+
 
         function setState(ix,state){
              data2[ix][STATE] = state;
@@ -332,11 +345,16 @@
 
                                 var fitness =  data2[r][FITNESS];
                                 fitness += pay;
-                                data2[r][FITNESS]  = rounded (fitness,6);
+
+                                data2[r][FITNESS]  = rounded (fitness,8);
+                                if (isEffector(ix)) nEffectorPays ++;
+
+
+
                                 fitness =  data2[ix][FITNESS];
-                                fitness -= pay;
+                                if (!isEffector(ix)) fitness -= pay;
                                 if (fitness < 0) fitness =0;//necessary ?
-                                data2[ix][FITNESS]  = rounded (fitness,6);
+                                data2[ix][FITNESS]  = rounded (fitness,8);
 
 
 
@@ -741,10 +759,10 @@ function findCond(ix){
 
             initRules(data2,0,4,"D","","11005555",1.0,1.0,0.0);
 
-            initRules(data2,5,5,"E","10100000","",1.0,1.0,0.0);
-            initRules(data2,6,6,"E","10000000","",1.0,1.0,0.0);
+            initRules(data2,5,5,"E","11000000","",1.0,1.0,0.0);
+           // initRules(data2,6,6,"E","11000001","",1.0,1.0,0.0);
 
-            initRules(data2,7,50,"I","11###555","11005555",1.0,1.0,0.0);
+            initRules(data2,6,50,"I","11###555","11005555",1.0,1.0,0.0);
 
 
             $( "#grid_array" ).pqGrid( "refreshDataAndView" );
